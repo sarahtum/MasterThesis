@@ -1,0 +1,193 @@
+\documentclass{article}
+
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas
+\usepackage{amssymb} % for mathbb	
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{cite}
+\title{\textbf{Overview over Mathematical MINLP Papers}}
+%\author{}
+%\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{TODO}
+\subsection{Leute}
+\begin{itemize}
+\item Prof. Sebastian Sager (Uni Magdeburg)
+\item Christian Kirches
+\item Bock-Gruppe Heidelberg
+\item oft gelesen: Grossmann
+\end{itemize}
+
+\subsection{Themen}
+\begin{itemize}
+\item Outer Approximation
+\item outer relaxation (Sebastian)
+\item outer convexification
+\item hybrid methods (see references in \cite{burer2012non})
+\end{itemize}
+
+\subsection{Paper}
+\begin{itemize}
+\item Non-convex mixed-integer nonlinear programming: A survey
+\item Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs
+\item Bonami: An algorithmic framework for convex MINLP
+\end{itemize}
+
+\subsection{Fragen an Sebastian}
+\begin{itemize}
+\item Sager: methods for MINLP that come from MIOCPs (mixed integer optimal control problems) by "first discretize, then optimize". Therefore large number of integer variables s.t. standard techniques like nonlinear Branch-and-Bound and Outer Approximation fail. This is not what we are planning to do?!
+\item MIOCPs?
+\item outer approximation: usually only for convex MINLPs. Trotzdem so ein Paper nehmen oder explizit was zu non-convex suchen (was schwierig ist)?
+\item our problem: separable functions?
+\end{itemize}
+
+\newpage
+\section{Branch and Bound}
+\subsection{Combinatorial integral approximation [2010, Sager, Jung, Kirches]}
+\begin{itemize}
+\item decomposition of MINLP into NLP and MILP
+\item bounds for gap between MILP ad MINLP solution
+\item propose tailored Branch and Bound strategy
+\end{itemize}
+
+\subsection{The Lagrangian Relaxation for the Combinatorial Integral Approximation Problem [2012, Jung, Sager]}
+\begin{itemize}
+\item continues previous paper
+\item study properties of Lagrangian of MILP
+\item prove polynomial runtime in special cases
+\end{itemize}
+
+\subsection{Solving Mixed-Integer Nonlinear Programs by QP-Diving [2012, Mahajan, Leyffer, Kirches]}
+\textcolor{red}{PROBLEM:} convexity
+\begin{itemize}
+\item new variant of Branch-and-Bound
+\item rather than solving expensive NLP at each node of Branch-and-Bound tree, solve quadratic approximation (QP approximation) at every node
+\item use WP solves that can be hot-started
+\item global convergence properties for convex MINLPs
+\end{itemize}
+
+\newpage
+\section{Outer approximation}
+
+\subsection{FilMINT: An Outer-Approximation-Based Solver for Nonlinear Mixed Integer Programs [Abhishek, Leyffer, Linderoth, 2008]}
+\begin{itemize}
+\item solver capable of solving MINLPs at cost which is a small multiple of cost of a comparable MILP
+\item algorithm used: \textcolor{blue}{LP/NLP-based branch-and-bound} (LP/NLP-BB) \cite{quesada1992lp}
+\begin{itemize}
+\item similar to outer-approximation, but:
+\item instead of solving alternating sequence of MILP master problems, NLP subproblems: interrupt solution of MILP master whenever new integer assignment is found, then solve a NLP subproblem
+\item (as usual:) solution of this subproblem provides new outer approximation added to master MILP, solving updated MILP master continues
+\item thus: only single branch-and-cut tree is created and searched
+\end{itemize}
+\item 
+\item 
+\end{itemize}
+
+
+
+\subsection{FilMINT: An Outer Approximation-Based Solver for Convex Mixed-Integer Nonlinear Programs [Abhishek, Leyffer, Linderoth, 2010]}
+\textcolor{red}{PROBLEM:} convexity
+\begin{itemize}
+\item solver for convex MINLPs implementing linearization-based algorithm
+\item avoids complete re-solution of master MILP by dding new linearizations at open nodes of branch-and-bound tree whenever integer solution is found
+\item FilMINT combines MINTO branch-and-cut framework for MILP (allows to use cutting planes, primal heuristics etc.)  with filterSQP for NLPs (active set solver allowing warm-starting, taking advantage of good initial primal and dual iterates)
+\end{itemize}
+
+
+
+
+
+\newpage
+\subsection{Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs [Kesvan, Allgor, Gatzke, Barton, 2004]}
+see \cite{kesavan2004outer}\\
+\textcolor{green}{Promising}
+\begin{itemize}
+\item 
+\item 
+\end{itemize}
+
+\section{neither Branch-and-Bound nor outer approximation}
+\subsection{The integer approximation error in mixed-integer optimal control [2010, Sager, Bock]}
+\begin{itemize}
+\item Problem: MINLP that come from discretizing MIOCPs cannot efficiently be solved using nonlinear BnB or outer approximation
+\item therefore Sager, Reinelt, Bock suggested another approach in "Direct methods with maximal lower bound for mixed-integer optimal control problems" [2009]
+\item on nonlinear optimal control problems with integer restrictions
+\item theorem: solution of relaxes and convexified problem can be approximated arbitrarily close by solution fulfilling the integer requirements
+\item constructive way to obtain integer solution with bound on performance loss
+\end{itemize}
+
+\subsection{Non-convex mixed-integer nonlinear programming: A survey [Burer, Letchford, 2012]}
+see \cite{burer2012non}\\
+\textcolor{green}{Promising}
+\begin{itemize}
+\item non-convex MINLP are challenging because  continous relaxation in general not convex
+\item key concepts
+	\begin{itemize}
+	\item \emph{Under- and Over-estimators}
+		\begin{itemize}
+		\item as solving continous relaxation still difficult, need a further relaxation step
+		\item replace each non-convex function $f^j(x,y)$ with convex under-estimating function $g^j(x,y)$ (i.e. $g^j(x,y) \leq f^j(x,y)$)
+		\item or replace each non-convex function $f^j(x,y)$ by new variable $z^j$ acting as a placeholder and add constraints enforcing that $z^j$ is approximately  $f^j(x,y)$, e.g. $z^j \geq g^j(x,y)$
+		\item same works for concave over-estimating functions or use linear under-/overestimating functions when want to use LP solver
+		\item for specific functions: convex and concave envelopes (tightest possible convex under-estimator/concave over-estimator)
+		\item for examples see references in \cite{burer2012non}, page 99.
+		\end{itemize}
+	\item \emph{Separable functions}
+		\begin{itemize}
+		\item function $f(x,y)$ separable if $f(x,y) = \sum_{i=1}^{n_1}g(x_i) + \sum_{j=1}^{n_2}h(y_j)$
+		\item sum of individual under-estimators is under-estimator for $f$
+		\item approximate non-convex MINLP by MILP by: approximate each individual function with piecewise linear function, introduce continuous variables $g_i, h_i$ representing values of those functions, introduce binary variables for each piece of some linear function, introduce further binary variables with linear constraints to ensure that $g_i, h_i$ take correct values
+		\end{itemize}
+	\item \emph{Factorization}
+		\begin{itemize}
+		\item introduce new variables and constraints s.t. resulting MINLP involves functions of simpler form
+		\item then find under-/over-estimators for simple functions
+		\end{itemize}
+	\item \emph{Branching: standard and spatial}
+		\begin{itemize}
+		\item 
+		\item 
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+\newpage
+\section{General}
+\subsection{Mixed-integer nonlinear optimization [Belotti, Kirches, Leyffer, Majahan, 2013]}
+\begin{itemize}
+\item models and applications of MINLP
+\item state of the art methods
+\item both convex and non-convex MINLP
+\item non-convex MINLP
+\begin{itemize}
+\item challenging because even after relaxing the integer variables to continuity the feasible region is in general non-convex, i.e. many local minimma
+\item also challenging as linearizations do not yield valid lower bounds any more
+\item approaches: piecewise linear approximations, generic strategies for obtaining convex relaxations, spatial branch-and-bound, under-/overestimation of nonconvex functions
+\end{itemize}
+\item review heuristic techniques obtaining good feasible solutions
+\end{itemize}
+
+\subsection{Numerical methods for mixed–integer optimal control problems [Sager, 2005]}
+see \cite{sager2005numerical}
+\begin{itemize}
+\item Chapter 1: MIOCP, Chapter 2: Optimal control, Chapter 3: MINLP
+\item 
+\end{itemize}
+
+
+
+
+\bibliography{../library}{}
+\bibliographystyle{plain}
+\end{document}
+
