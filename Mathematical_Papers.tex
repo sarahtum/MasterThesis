@@ -1,5 +1,4 @@
 \documentclass{article}
-
 %\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
 %\usepackage[T1]{fontenc} % das Trennen der Umlaute
 %\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
@@ -14,11 +13,8 @@
 \title{\textbf{Overview over Mathematical MINLP Papers}}
 %\author{}
 %\date{\today}
-
 \begin{document}
-
 \maketitle
-
 \section{TODO}
 \subsection{Leute}
 \begin{itemize}
@@ -28,7 +24,6 @@
 \item oft gelesen: Grossmann
 \item McCormick (spatial branching, oft zitiert von \cite{burer2012non})
 \end{itemize}
-
 \subsection{Themen}
 \begin{itemize}
 \item Outer Approximation
@@ -36,10 +31,8 @@
 \item outer convexification
 \item hybrid methods (see references in \cite{burer2012non})
 \end{itemize}
-
 \subsection{Paper}
 \begin{itemize}
-\item Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs
 \item Bonami: An algorithmic framework for convex MINLP
 \item R. Karuppiah, I.E. Grossman, A Lagrangian based branch-and-cut algorithm
 for global optimization of nonconvex mixed-integer nonlinear programs
@@ -63,7 +56,6 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item Ambrosio: Mixed integer nonlinear programming tools: an updated practical overview
 \item Bonami, Hijazi, Ouorou: An Outer-Inner Approximation for separable MINLP
 \end{itemize}
-
 \subsection{Fragen an Sebastian}
 \begin{itemize}
 \item Sager: methods for MINLP that come from MIOCPs (mixed integer optimal control problems) by "first discretize, then optimize". Therefore large number of integer variables s.t. standard techniques like nonlinear Branch-and-Bound and Outer Approximation fail. This is not what we are planning to do?!
@@ -71,7 +63,6 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item outer approximation: usually only for convex MINLPs. Trotzdem so ein Paper nehmen oder explizit was zu non-convex suchen (was schwierig ist)?
 \item our problem: separable functions?
 \end{itemize}
-
 \newpage
 \section{Branch and Bound}
 \subsection{Combinatorial integral approximation [2010, Sager, Jung, Kirches]}
@@ -80,14 +71,12 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item bounds for gap between MILP ad MINLP solution
 \item propose tailored Branch and Bound strategy
 \end{itemize}
-
 \subsection{The Lagrangian Relaxation for the Combinatorial Integral Approximation Problem [2012, Jung, Sager]}
 \begin{itemize}
 \item continues previous paper
 \item study properties of Lagrangian of MILP
 \item prove polynomial runtime in special cases
 \end{itemize}
-
 \subsection{Solving Mixed-Integer Nonlinear Programs by QP-Diving [2012, Mahajan, Leyffer, Kirches]}
 \textcolor{red}{PROBLEM:} convexity
 \begin{itemize}
@@ -96,10 +85,8 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item use WP solves that can be hot-started
 \item global convergence properties for convex MINLPs
 \end{itemize}
-
 \newpage
 \section{Outer approximation}
-
 \subsection{FilMINT: An Outer-Approximation-Based Solver for Nonlinear Mixed Integer Programs [Abhishek, Leyffer, Linderoth, 2008]}
 \begin{itemize}
 \item solver capable of solving MINLPs at cost which is a small multiple of cost of a comparable MILP
@@ -113,9 +100,6 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item 
 \item 
 \end{itemize}
-
-
-
 \subsection{FilMINT: An Outer Approximation-Based Solver for Convex Mixed-Integer Nonlinear Programs [Abhishek, Leyffer, Linderoth, 2010]}
 \textcolor{red}{PROBLEM:} convexity
 \begin{itemize}
@@ -123,13 +107,8 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item avoids complete re-solution of master MILP by dding new linearizations at open nodes of branch-and-bound tree whenever integer solution is found
 \item FilMINT combines MINTO branch-and-cut framework for MILP (allows to use cutting planes, primal heuristics etc.)  with filterSQP for NLPs (active set solver allowing warm-starting, taking advantage of good initial primal and dual iterates)
 \end{itemize}
-
-
-
-
-
 \newpage
-\subsection{Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs [Kesvan, Allgor, Gatzke, Barton, 2004]}
+\subsection{Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs [Kesavan, Allgor, Gatzke, Barton, 2004]}
 see \cite{kesavan2004outer}\\
 \textcolor{green}{Promising}\\
 \textcolor{red}{PROBLEM:} old\\
@@ -140,17 +119,46 @@ see \cite{kesavan2004outer}\\
 \item convergence and optimality properties proven
 \item for non-convex MINLPs: recently a couple of algorithms based ond branch-and-bound strategies have been developed (e.g. branch-and-reduce, $\alpha$BB, spatial BB...). All based on solving lower bounding relaxed master problem, upper bounding primal problem at each node of BB tree. Only differ in formulation of master and primal problem and heuristic braching strategy.
 \item this paper: these convex under-estimators employed by BB-approaches may also be exploited to develop decomposition algorithms for non-convex MINLPs
-\item subproblems used in algorithm: (derived in section 2) 	
+\item subproblems used in algorithm:	
 	\begin{itemize}
-	\item Lower Bounding Convex MINLP: solution yields lower bound to global solution of original problem ($P$)
-	\item Master Problem: MILP, solution yields lower bound to global solution of ($P$)
-	\item Relaxed Master Problem: MILP, solution is lower bound on subset not yet explored
-	\item Primal Problem: nonconvex NLP obtained by fixing binary variables ($y$) in ($P$). Any feasible solution yields upper bound to ($P$)
-	\item Primal Bounding Problem: convex NLP, solution tighter lower bound to primal problem for each fixed binary realization $y$ than the bound provided by relaxed master problem generating $y$
+	\item \textbf{Lower Bounding Convex MINLP ($P_1$}): solution yields lower bound to global solution of original problem ($P$)
+		\begin{itemize}
+		\item convexify and underestimate non-convex functions in continuous variables (remember that ($P$) is separable). The closer this under-estimator to convex envelope, the tighter lower bound
+		\item this modified problem ($P_1$) contains feasible set of ($P$) s.t. solution represents valid lower bound
+		\end{itemize}
+	\item \textbf{Master Problem ($M$)}: MILP, solution yields lower bound to global solution of ($P$)
+		\begin{itemize}
+		\item ($P_1$) is convex MINLP s.t. outer approximation can be used to derive equivalent MILP ($M$)
+		\item as ($P_1$) and ($M$) are equivalent, solution of ($M$) yields lower bound to original problem ($P$)
+		\end{itemize}
+	\item \textbf{Relaxed Master Problem ($M^k$)}: MILP, solution is lower bound on subset not yet explored
+		\begin{itemize}
+		\item similar to original OA algorithm relaxations of $M$ are solved at each iteration 
+		\item integer cuts excluding previously examined integer relalizations are added to Relaxed Master problem
+		\item solution of relaxed master problem yields new integer realization, iteration is repeated
+		\end{itemize}
+	\item \textbf{Primal Problem (NLP($y^j$))}: nonconvex NLP obtained by fixing binary variables ($y=y^j$) in ($P$). Any feasible solution yields upper bound to ($P$)
+	\item \textbf{Primal Bounding Problem (NLPB($y^j$)}): convex NLP
+		\begin{itemize}
+		\item obtained by fixing $y=y^j$ in ($P_1$)
+		\item for fixed realization of $y$ the feasible set of (NLPB($y^j$)) overestimates the feasible set of (NLP($y^j$)) and underestimates the objective function of (NLP($y^j$))
+		\item solution is lower bound to solution of (NLP($y^j$))
+		\item solution tighter lower bound than the bound provided by relaxed master problem generating $y^j$
+		\end{itemize}
 	\end{itemize}
-\item section 3: algorithms presented
+\item additional assumptions on ($P$) are discussed (twice differentiable)
+\item Burer (\cite{burer2012non}) claims that authosrs assume that $h^j(y)$ are lnear and $y$ is binary???
+\item algorithms
+	\begin{itemize}
+	\item one algorithm finding global solution of non-convex MINLP
+	\item one algorithm yielding rigorous bound on global solution
+	\end{itemize}
+\item theoretical and numerical properties
+	\begin{itemize}
+	\item convergence properties of algorithms (termination in finite number of steps)
+	\item experimental results suggest: this decomposition strategy is more efficient (w.r.t. CPU time) when compared to currently available branch-and-bound algorithms for non-convex MINLPs
+	\end{itemize}
 \end{itemize}
-
 \newpage
 \section{neither Branch-and-Bound nor outer approximation}
 \subsection{The integer approximation error in mixed-integer optimal control [2010, Sager, Bock]}
@@ -161,7 +169,6 @@ see \cite{kesavan2004outer}\\
 \item theorem: solution of relaxes and convexified problem can be approximated arbitrarily close by solution fulfilling the integer requirements
 \item constructive way to obtain integer solution with bound on performance loss
 \end{itemize}
-
 \subsection{Non-convex mixed-integer nonlinear programming: A survey [Burer, Letchford, 2012]}
 see \cite{burer2012non}\\
 \textcolor{green}{Promising}\\
@@ -238,7 +245,6 @@ see \cite{burer2012non}\\
 	\item packages which can be used to find heuristic solutions for non-convex MINLPs: BONMIN, DICOPT, etc.
 	\end{itemize}	 
 \end{itemize}
-
 \newpage
 \section{General}
 \subsection{Mixed-integer nonlinear optimization [Belotti, Kirches, Leyffer, Majahan, 2013]}
@@ -254,20 +260,15 @@ see \cite{burer2012non}\\
 \end{itemize}
 \item review heuristic techniques obtaining good feasible solutions
 \end{itemize}
-
 \subsection{Numerical methods for mixed-integer optimal control problems [Sager, PhD-Thesis, 2005]}
 see \cite{sager2005numerical}
 \begin{itemize}
 \item Chapter 1: MIOCP, Chapter 2: Optimal control, Chapter 3: MINLP
 \item 
 \end{itemize}
-
 \subsection{Fast Numerical Methods for Mixed-Integer Nonlinear Model-Predictive Control [Kirches, PhD-Thesis, 2010]}
-
 \subsection{Mixed integer nonlinear programming tools: an updated practical overview [Ambrosio, 2013]}
 \url{https://link.springer.com/article/10.1007/s10479-012-1272-5}
-
 \bibliography{../library}{}
 \bibliographystyle{plain}
 \end{document}
-
