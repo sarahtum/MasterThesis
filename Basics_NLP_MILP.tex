@@ -1,0 +1,62 @@
+\documentclass{article}
+
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas
+\usepackage{amssymb} % for mathbb	
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref}
+\usepackage{cite}
+\title{\textbf{General Techniques for MILP and NLP}}
+%\author{}
+%\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Integer linear Programming}
+\subsection{Branch and Bound}
+Form a rooted tree with the full set of candidate solutions at the root. The algorithm explores branches of this tree, which represent subsets of the solution set. Before enumerating the candidate solutions of a branch, the branch is checked against upper and lower estimated bounds on the optimal solution, and is discarded if it cannot produce a better solution than the best one found so far by the algorithm.
+
+The algorithm depends on the efficient estimation of the lower and upper bounds of a region/branch of the search space.
+
+\subsection{Cutting Plane Techniques}
+(see \cite{cuttingplane98})
+
+The fundamental idea behind cutting planes is to add constraints to a linear program until the optimal basic feasible solution takes on integer values. Of course, we have to be careful which constraints we add: we would not want to change the problem by adding the constraints. We will add a special type of constraint called a cut. A cut relative to a current fractional solution satisfies the following criteria:
+\begin{itemize}
+\item     every feasible integer solution is feasible for the cut, and
+\item     the current fractional solution is not feasible for the cut. 
+\end{itemize}
+
+There are two ways to generate cuts. The first, called Gomory cuts, generates cuts from any linear programming tableau. This has the advantage of ``solving'' any problem but has the disadvantage that the method can be very slow. The second approach is to use the structure of the problem to generate very good cuts. The approach needs a problem-by-problem analysis, but can provide very efficient solution techniques. 
+
+\section{Nonlinear Programming}
+\subsection{Constraint Qualifications}
+\begin{itemize}
+\item necessary for KKT-conditions to hold (i.e. if in local minimum some CQ holds, it satisfies the KKT-conditions)
+\item in general, not sufficient for optimality, e.g. Second Order Suffiecient Conditions needed
+\item KKT conditions are necessary optimality conditions
+\end{itemize}
+
+\subsection{Solving Algorithms}
+\subsubsection{Newton's Method or Sequential Quadratic Programming}
+\begin{itemize}
+\item active set
+\end{itemize}
+\subsubsection{Interior-Point Methods}
+
+\subsubsection{Trust-Region Methods}
+\begin{itemize}
+\item only in unrestricted optimization!
+\item to extend algorithms to global convergence
+\end{itemize}
+
+\bibliography{library}{}
+\bibliographystyle{plain}
+\end{document}
+

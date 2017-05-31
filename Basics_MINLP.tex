@@ -1,0 +1,137 @@
+\documentclass{article}
+
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas
+\usepackage{amssymb} % for mathbb	
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{cite}
+\title{\textbf{Techniques for MINLP}}
+%\author{}
+%\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Basic facts about MINLP}
+\begin{itemize}
+\item MINLP is NP-hard (clear as it includes MILP)
+\item MINLP is undecidable (i.e. there are qudratically constrained IP for which no computing device can compute optimum for all instances of the class). But we're ok if $X$ is compact or all functions are convex.
+\item Online Benchmark Library at \url{https://mintoc.de/index.php/Main_Page}, providing set of application problems to evaluate numerical optimization methods
+\end{itemize}
+
+\section{Two fundamental concepts}
+\subsection{Relaxation Enforcement}
+\begin{itemize}
+\item A relaxation is obtained by enlarging the feasible set of the MINLP, for example, by ignoring some constraints of the problem.
+\item A relaxation is used to compute a lower bound. 
+\item Together with upper bounds, which can be obtained from any feasible point (e.g. by solving NLP for fixed $x_I$), relaxations allow us to terminate the search for a solution whenever the lower bound is larger than the current upper bound.
+\end{itemize}
+
+\subsection{Constraint Enforcement}
+\begin{itemize}
+\item goal: exclude solutions that are feasible for the relaxation but not to the original MINLP
+\item may be accomplished by 
+\begin{itemize}
+\item refining or tightening the relaxation, often by adding valid inequalities ("cut"), or by 
+\item branching, where the relaxation is divided into two or more separate problems, managed in a search tree
+\item spatial branching: branch on continous variable and split domain in two parts
+\end{itemize}
+\item 
+\end{itemize} 
+ 
+\section{Relaxations}
+\begin{itemize}
+\item Relaxing integrality (yielding a \textcolor{blue}{\textit{nonlinear relaxation}}), used in Branch-and-Bound
+\item Relaxing convex constraints with a set of supporting hyperplanes (obtained by Taylor, yielding a \textcolor{blue}{\textit{polyhedral relaxation}}), used in outer approximation methods
+\item Relaxing non-convex constraints (using convex underestimators), used in spatial Branch-and-Bound
+\end{itemize}
+
+\section{Solving Algorithms}
+\begin{itemize}
+\item better use active-set algorithms (as SQP) than Interior-Point methods
+\item Sebastian: 
+\begin{itemize}
+\item if integer structure not too complex, rather use \textit{outer approximation}
+\item if nonlinear structure not too complex, rather use \textit{Branch-and-Bound}
+\item outer approximation: "try to solve MILP as NLP as well"
+\item Branch-and-Bound: "try to solve NLP as MILP as well"
+\end{itemize}
+\item lack of hot-starts affects both active-set and interior-point methods
+\item distinguish two broad classes of methods: 
+\begin{itemize}
+\item single-tree (like Branch-and-Bound, Branch-and-Cut) 
+\item multi-tree (like outer approximation, Benders decomposition)
+\end{itemize}
+
+\end{itemize}
+
+
+\subsection{Nonlinear Branch-and-Bound}
+\begin{itemize}
+\item requires solution of large number of NLP
+\item nearly impossible to effectively hot-start NLP solver (which is very different to ILP)
+\item main reason for this: factors are outdated as soon as a step is taken because Hessian and Jacobian matrices are nonlinear and non constant
+\end{itemize}
+
+\subsection{Outer-approximation}
+\begin{itemize}
+\item idea: avoid huge number of NLPs, instead use available well-advanced MILP solvers
+\item solve \emph{alternating} finite sequence of NLP subproblems (for obtaining feasible solutions that act as upper bounds, around which we linearize and modify the MILP)
+\item and relaxed (linearized) versions of a MILP master program (solutions act as lower bounds)
+\end{itemize}
+
+\noindent
+see \url{https://www.researchgate.net/publication/225887190_An_Outer-Approximation_Algorithm_for_a_Class_of_Mixed-Integer_Nonlinear_Programs} of Grossmann (1987) for an overview
+
+\subsection{Generalized Benders decomposition}
+from \cite{sager2005numerical}, p. 60
+\begin{itemize}
+\item similar to outer approximation but using another master program, including the Langrangian
+\item less constriants and variables, but weaker formulation that outer approximation
+\item hardly used anymore today
+\end{itemize}
+
+\subsection{Extended Cutting Plane Method}
+
+\section{MINLP Modeling Practices}
+see \cite{Belotti13}, page 13
+
+\begin{itemize}
+\item prefer linear over convex over nonconvex formulations
+\item use convexification of binary quadratic programs (via smallest eigenvalue)
+\item exploit low-rank Hessians (replace dense Hessian $W$ by $W = Z^T R^{-1} Z$ with $Z$ sparse, $R$ covariance matrix)
+\item linearize of constraints, e.g. linearization of $x_1x_2$ for $x_2\in\{0,1\}$
+\item avoid undefined nonlinear expressions
+\item never model on/off constraints by multiplying by a binary variable
+\end{itemize}
+
+\noindent
+see \cite{sager2005numerical}, page 53
+\begin{itemize}
+\item (geometrically motivated) reformulations for integer constraints
+\item 
+\end{itemize}
+
+\noindent
+see \cite{raman1994modelling}, 
+a framework helping to generate effective models
+\section{MINLP solvers}
+\subsection{DICOPT}
+
+\subsection{BONMIN}
+\cite{bonami2008algorithmic}
+
+\subsection{filMINT}
+\cite{abhishek2010filmint}
+
+\bibliography{../library}{}
+\bibliographystyle{plain}
+\end{document}
+
