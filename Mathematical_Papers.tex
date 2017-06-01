@@ -12,9 +12,14 @@
 \usepackage{cite}
 \title{\textbf{Overview over Mathematical MINLP Papers}}
 %\author{}
-%\date{\today}
+\date{}
 \begin{document}
+
 \maketitle
+\tableofcontents
+
+\newpage
+
 \section{TODO}
 \subsection{Leute}
 \begin{itemize}
@@ -26,26 +31,21 @@
 \end{itemize}
 \subsection{Themen}
 \begin{itemize}
-\item Outer Approximation
-\item outer relaxation (Sebastian)
+%\item Outer Approximation
+%\item outer relaxation (Sebastian): meint wahrscheinlich: relaxation using outer approximation (i.e. in relaxed master problem relaxation is obtained by linearization around outer approximation points; in contrast to e.g. relaxing integrality constraints)
 \item outer convexification
-\item hybrid methods (see references in \cite{burer2012non})
+%\item hybrid methods: meint wahrscheinlich: methods dealing with both integer and continous variables
 \end{itemize}
 \subsection{Paper}
 \begin{itemize}
-\item Bonami: An algorithmic framework for convex MINLP
 \item R. Karuppiah, I.E. Grossman, A Lagrangian based branch-and-cut algorithm
 for global optimization of nonconvex mixed-integer nonlinear programs
 with decomposable structures
-\item C. D’Ambrosio, J. Lee, A. W\"achter, An algorithmic framework for MINLP with
-separable non-convexity
 \item . Leyffer, Integrating SQP and branch-and-bound for mixed integer
 nonlinear programming (use exact algo for convex MINLP as heuristic for non-convex)
 \item G. Nannicini, P. Belotti, Rounding-based heuristics for nonconvex MINLPs,
 Math. Program. Comput. (heuristic for non-convex MINLPs solving alternating sequence of NLPs and MILPs)
 \item literaturliste von \cite{burer2012non}
-\item The integer approximation error in mixed-integer optimal control (see below)
-\item and paper which is mentioned below
 \item Kirches, Bock, Leyffer: Modeling Mixed-Integer Constrained
 Optimal Control Problems in AMPL
 \item Kirches, Bock, Sager: Mixed-integer NMPC for predictive cruise control of heavy-duty trucks
@@ -59,17 +59,29 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \subsection{Fragen an Sebastian}
 \begin{itemize}
 \item Sager: methods for MINLP that come from MIOCPs (mixed integer optimal control problems) by "first discretize, then optimize". Therefore large number of integer variables s.t. standard techniques like nonlinear Branch-and-Bound and Outer Approximation fail. This is not what we are planning to do?!
-\item MIOCPs?
+\item MIOCPs? Was bedeutet optimal control genau? We'll have robot dynamics instead of ODE. Trotzdem MIOCP-Paper, nicht lieber allgemeines MINLP paper?
+\item Sager, Kirches: immer MIOCPs, oft mit discrete decisions, huge number of integer variables (after discretization)
 \item outer approximation: usually only for convex MINLPs. Trotzdem so ein Paper nehmen oder explizit was zu non-convex suchen (was schwierig ist)?
-\item our problem: separable functions?
+\item our problem: separable functions? Can be made separable by factorization? Zu speziell?
+\item problem size?
+\item Modell soll gesamtes Problem (inklusive Dynamik) beschreiben?!
+\item logical statt integer? disjunctive programming?
 \end{itemize}
 \newpage
 \section{Branch and Bound}
 \subsection{Combinatorial integral approximation [2010, Sager, Jung, Kirches]}
+see \cite{sager2011combinatorial}
 \begin{itemize}
-\item decomposition of MINLP into NLP and MILP
-\item bounds for gap between MILP ad MINLP solution
+\item focus on MINLP arising from "first discretize, then optimize" of MIOCPs, focus on combinatorial constraints
+\item decomposition of MINLP into NLP and MILP (both can be solved comparatively efficiently)
+\item discuss bounds for gap between MILP ad MINLP solution
 \item propose tailored Branch and Bound strategy
+\item approximation results:
+	\begin{itemize}
+	\item theorem stating how difference of solutions to initial value problem depends on integrated difference between control functions and difference between initial values
+	\item estimate on integral over difference between control functions
+	\item if discretization grid is fine enough, no integer gap exists
+	\end{itemize}
 \end{itemize}
 \subsection{The Lagrangian Relaxation for the Combinatorial Integral Approximation Problem [2012, Jung, Sager]}
 \begin{itemize}
@@ -88,8 +100,11 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \newpage
 \section{Outer approximation}
 \subsection{FilMINT: An Outer-Approximation-Based Solver for Nonlinear Mixed Integer Programs [Abhishek, Leyffer, Linderoth, 2008]}
+\textcolor{red}{PROBLEM:} convexity
 \begin{itemize}
-\item solver capable of solving MINLPs at cost which is a small multiple of cost of a comparable MILP
+\item solver for convex MINLPs at cost which is a small multiple of cost of a comparable MILP, implementing linearization-based algorithm
+\item avoids complete re-solution of master MILP by adding new linearizations at open nodes of branch-and-bound tree whenever integer solution is found
+\item FilMINT combines MINTO branch-and-cut framework for MILP (allows to use cutting planes, primal heuristics etc.)  with filterSQP for NLPs (active set solver allowing warm-starting, taking advantage of good initial primal and dual iterates)
 \item algorithm used: \textcolor{blue}{LP/NLP-based branch-and-bound} (LP/NLP-BB) \cite{quesada1992lp}
 \begin{itemize}
 \item similar to outer-approximation, but:
@@ -97,18 +112,11 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item (as usual:) solution of this subproblem provides new outer approximation added to master MILP, solving updated MILP master continues
 \item thus: only single branch-and-cut tree is created and searched
 \end{itemize}
-\item 
-\item 
 \end{itemize}
-\subsection{FilMINT: An Outer Approximation-Based Solver for Convex Mixed-Integer Nonlinear Programs [Abhishek, Leyffer, Linderoth, 2010]}
-\textcolor{red}{PROBLEM:} convexity
-\begin{itemize}
-\item solver for convex MINLPs implementing linearization-based algorithm
-\item avoids complete re-solution of master MILP by dding new linearizations at open nodes of branch-and-bound tree whenever integer solution is found
-\item FilMINT combines MINTO branch-and-cut framework for MILP (allows to use cutting planes, primal heuristics etc.)  with filterSQP for NLPs (active set solver allowing warm-starting, taking advantage of good initial primal and dual iterates)
-\end{itemize}
+
 \newpage
 \subsection{Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs [Kesavan, Allgor, Gatzke, Barton, 2004]}
+\label{sec:OA_nonconvex}
 see \cite{kesavan2004outer}\\
 \textcolor{green}{Promising}\\
 \textcolor{red}{PROBLEM:} old\\
@@ -147,7 +155,7 @@ see \cite{kesavan2004outer}\\
 		\end{itemize}
 	\end{itemize}
 \item additional assumptions on ($P$) are discussed (twice differentiable)
-\item Burer (\cite{burer2012non}) claims that authosrs assume that $h^j(y)$ are lnear and $y$ is binary???
+\item Burer (\cite{burer2012non}) claims that authors assume that $h^j(y)$ are linear and $y$ is binary???
 \item algorithms
 	\begin{itemize}
 	\item one algorithm finding global solution of non-convex MINLP
@@ -163,11 +171,17 @@ see \cite{kesavan2004outer}\\
 \section{neither Branch-and-Bound nor outer approximation}
 \subsection{The integer approximation error in mixed-integer optimal control [2010, Sager, Bock]}
 \begin{itemize}
-\item Problem: MINLP that come from discretizing MIOCPs cannot efficiently be solved using nonlinear BnB or outer approximation
-\item therefore Sager, Reinelt, Bock suggested another approach in "Direct methods with maximal lower bound for mixed-integer optimal control problems" [2009]
-\item on nonlinear optimal control problems with integer restrictions
-\item theorem: solution of relaxes and convexified problem can be approximated arbitrarily close by solution fulfilling the integer requirements
-\item constructive way to obtain integer solution with bound on performance loss
+\item Problem: MINLP that come from discretizing MIOCPs cannot efficiently be solved using nonlinear BnB or outer approximation (due to large number of integer variables)
+\item therefore Sager, Reinelt, Bock suggested another approach in "Direct methods with maximal lower bound for mixed-integer optimal control problems" (\cite{sager2009direct}):
+	\begin{itemize}
+	\item on MIOCPs with swith on/off discrete variables
+	\item solve relaxed continuous control problem, get integer solutions by combination of grid adaptivity and Sum Up Rounding Strategy
+	\item solves multistage MIOCP
+\end{itemize}	 
+\item Theorem: solution of relaxed and convexified problem can be approximated arbitrarily close by solution fulfilling the integer requirements
+\item discuss Sum Up Rounding Strategy: more than a heuristic (as it was previously described), constructive way to obtain integer solution with bound on performance loss (tolerance depends on control discretization grid)
+\item estimate on Hausdorff distance between reachable sets, improvements in approximation order
+\item main contribution: complete proof for termination of algorithm suggested by Sager on optimization of switching decisions in nonlinear optimal control
 \end{itemize}
 \subsection{Non-convex mixed-integer nonlinear programming: A survey [Burer, Letchford, 2012]}
 see \cite{burer2012non}\\
@@ -234,6 +248,11 @@ see \cite{burer2012non}\\
 		\begin{itemize}
 		\item sometimes possible to convert exact algorithms for convex MINLPs into heuristics for non-convex MINLPs, e.g. see \cite{leyffer2001integrating} or \cite{nannicini2012rounding}
 		\end{itemize}
+	\item \emph{Other exact algorithms}
+		\begin{itemize}
+		\item Kesavan \cite{kesavan2004outer}, see \ref{sec:OA_nonconvex}
+		\item D'Ambrosio \cite{d2012algorithmic}, see \ref{sec:SQ-MINLP}
+		\end{itemize}
 	\end{itemize}
 \item algorithms for special case of all non-linear functions are quadratic
 	\begin{itemize}
@@ -245,6 +264,67 @@ see \cite{burer2012non}\\
 	\item packages which can be used to find heuristic solutions for non-convex MINLPs: BONMIN, DICOPT, etc.
 	\end{itemize}	 
 \end{itemize}
+
+\subsection{An Algorithmic Framework for MINLP with separable non-convexity [D'Ambrosio, Lee, W\"achter, 2012]}
+\label{sec:SQ-MINLP}
+\textcolor{green}{PROMISING}, see \cite{d2012algorithmic}
+\begin{itemize}
+\item suggests simple algorithm using alternating sequence of non-convex NLP restrictions and convex MINLP relaxations
+\item MINLPs with non-convex objective and constraint functions, but sum of non-convex univariate functions (i.e. separable)
+\item employ (repeatedly refined) lower bounding \emph{convex} MINLP relaxation by using piecewise-convex under-estimators
+\item many problems can be brought in assumed form (i.e. separable) by simple substitutions (similar to what is done in first step in spatial branch-and-bound), see also 3.4
+\item \textbf{Sequential Convex MINLP algorithm }(implemented in AMPL):
+	\begin{itemize}
+	\item first, identify convex and concave subintervals (using MATLAB) by computing points at which convexity/concavity may change (i.e. zeros of second derivative)
+	\item then find convex MINLP relaxation (working on these subintervals), handle it using BONMIN solver to find lower bounds
+	\item fix integer values and solve non-convex NLP restriction (using IPOPT) to find upper bounds
+	\item at each step decrease gap between lower and upper bound, use solutions for further refinement following two refinement strategies
+		\begin{itemize}
+		\item based on lower-bounding solution $\underbar{x}$: if $\underbar{x}_k$ lies in concave interval of $g_{ik}$, add $\underbar{x}_k$ as a breakpoint for relaxation of $g_{ik}$
+		\item same based on upper-bounding solution $\bar{x}$
+		\end{itemize}
+	\end{itemize}
+\item \textbf{novelty}: new formulation of convex relaxation: functions approximated only where they are concave, convex parts are taken as they are
+\item comparison to spatial branch-and-bound
+	\begin{itemize}
+	\item refining phase: parts where approximation is bad are improved, but by adding more breakpoints instea of branching!
+	\item directly keep multivariate convex functions in relaxations instead of using linear approximations
+	\end{itemize}
+\item convergence analysis under rather weak assumptions (apart from Lipschitz continuity): either termination at \emph{global solution} or each limit point of lower bound sequence is global solution
+\item computational results: 
+	\begin{itemize}
+	\item for middle sized-problem ($\mathcal{O}(10^2)$) good CPU times (up to two minute), very few iterations needed
+	\item BONMIN sometimes way faster, but is only a heuristic (when used on non-convex problems)! faster than comparable solvers
+\end{itemize}	 
+\end{itemize}
+
+\subsection{An algorithmic framework for convex mixed integer nonlinear programs [Bonami et al., 2008]}
+see \cite{bonami2008algorithmic}
+\begin{itemize}
+\item introduces algorithmic framework BONMIN which is exact for convex MINLP, can be used as heuristic for non-convex MINLP
+\item use flexible branch-and-cut-scheme, \textbf{combination of BB and OA}
+	\begin{itemize}
+	\item uses outer approximations \textit{and} subproblem relaxations (relaxing integrality) to compute lower bounds
+	\item uses restrictions of integer variables $x\in X \cap \mathbb{Z}^n$ to $x\in \bar{X} \cap \mathbb{Z}^n$ to compute upper bounds
+	\item when \emph{only subproblem relaxations} used to compute lower bounds (as solution of NLP) \\
+	$\rightarrow$ classical branch-and-bound
+	\item when \textit{only outer approximations} used to compute lower bounds (as solution of MILP) \\
+	$\rightarrow$ classical OA algorithm
+	\end{itemize}
+\item implementation:
+	\begin{itemize}
+	\item \texttt{B-BB}: NLP Branch-and-Bound framework (based on interior-point NLP solver Ipopt)
+	\item \texttt{B-OA}: OA framework based on Ipopt, LP solver Clp
+	\item \texttt{B-Hyb}: hybrid algorithm obtaining either \texttt{B-BB} or \texttt{B-OA} or anything in between
+	\end{itemize}
+\item theoretical result: If $T=\{(x^1,y^1), ... ,(x^K,y^K)\}$ any set of points containing suitable points with KKT conditions, $P^{OA}(T)$ OA-relaxation around these points, then $P$ and $P^{OA}(T)$ are equivalent (having same optimal value, corresponding optimal solutions)
+\item computational results:
+	\begin{itemize}
+	\item  \texttt{B-Hyb} dominates \texttt{B-BB} and \texttt{B-OA}
+	\item in paper of D'Ambrosio, Lee, W\"achter on "Algorithmic Framework for MINLP with separable \emph{non-convexity}" (see \cite{d2012algorithmic} and \ref{sec:SQ-MINLP}) BONMIN performs very well also as heuristic for non-convex MINLPs
+	\end{itemize}
+\end{itemize}
+
 \newpage
 \section{General}
 \subsection{Mixed-integer nonlinear optimization [Belotti, Kirches, Leyffer, Majahan, 2013]}

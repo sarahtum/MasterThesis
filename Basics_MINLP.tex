@@ -11,6 +11,7 @@
 \usepackage{hyperref}
 \usepackage{color}
 \usepackage{cite}
+\usepackage{graphicx}
 \title{\textbf{Techniques for MINLP}}
 %\author{}
 %\date{\today}
@@ -24,6 +25,7 @@
 \item MINLP is NP-hard (clear as it includes MILP)
 \item MINLP is undecidable (i.e. there are qudratically constrained IP for which no computing device can compute optimum for all instances of the class). But we're ok if $X$ is compact or all functions are convex.
 \item Online Benchmark Library at \url{https://mintoc.de/index.php/Main_Page}, providing set of application problems to evaluate numerical optimization methods
+\item MIOCPs: mixed-integer nonlinear optimization problems constrained by a system of ODEs
 \end{itemize}
 
 \section{Two fundamental concepts}
@@ -75,6 +77,7 @@
 
 \subsection{Nonlinear Branch-and-Bound}
 \begin{itemize}
+\item compute lower bounds for subproblems (obtained by branching) by solving their continous relaxations
 \item requires solution of large number of NLP
 \item nearly impossible to effectively hot-start NLP solver (which is very different to ILP)
 \item main reason for this: factors are outdated as soon as a step is taken because Hessian and Jacobian matrices are nonlinear and non constant
@@ -85,10 +88,27 @@
 \item idea: avoid huge number of NLPs, instead use available well-advanced MILP solvers
 \item solve \emph{alternating} finite sequence of NLP subproblems (for obtaining feasible solutions that act as upper bounds, around which we linearize and modify the MILP)
 \item and relaxed (linearized) versions of a MILP master program (solutions act as lower bounds)
+\item assumptions: linearity of integer (or discrete) variables, convexity of nonlinear functions involving continuous variables
+\item \textbf{Upper Bounding NLP Subproblem:} fix $y=y^k$ and solve non-linear problem (giving an upper bounding solution $x^k$)
+\item \textbf{MILP Master Problem:} 
+	\begin{itemize}
+	\item idea: develop equivalent linear representatiton (i.e. MILP) of original MINLP
+	\item do so by linearizing MINLP around $x=x^k$ (the problem now is a relaxation of original MINLP, giving a lower bound)
+	\item or - more general - by replacing the nonlinear functions by polyhedral outer approximations
+	\end{itemize}
+\item done when upper and lower bound are same, otherwise update new $y^k$ as new fixed value of $y$ in next NLP subproblem
 \end{itemize}
+See figure \ref{fig:OA_FlowChart} for a schematic overview
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=1.2]{OA_FlowChart.png}
+\caption{Schematic Overview of Outer Approximation Algorithm by Grossmann and Duran}
+\label{fig:OA_FlowChart}
+\end{figure}
 
 \noindent
-see \url{https://www.researchgate.net/publication/225887190_An_Outer-Approximation_Algorithm_for_a_Class_of_Mixed-Integer_Nonlinear_Programs} of Grossmann (1987) for an overview
+See \cite{duran1986outer} of Duran and Grossmann (1987) for an overview. See \href{https://optimization.mccormick.northwestern.edu/index.php/Outer-approximation_(OA)}{here} for a numerical example.
 
 \subsection{Generalized Benders decomposition}
 from \cite{sager2005numerical}, p. 60
@@ -98,6 +118,11 @@ from \cite{sager2005numerical}, p. 60
 \item hardly used anymore today
 \end{itemize}
 
+\subsection{Spatial branch-and-bound}
+\begin{itemize}
+\item algorithm for non-convex MINLPs
+\item underestimation of objective, overestimation of feasible set by appropriate convex under-estimators
+\end{itemize}
 \subsection{Extended Cutting Plane Method}
 
 \section{MINLP Modeling Practices}
@@ -124,12 +149,40 @@ see \cite{raman1994modelling},
 a framework helping to generate effective models
 \section{MINLP solvers}
 \subsection{DICOPT}
+\begin{itemize}
+\item implements an OA algorithm (laut \cite{bonami2008algorithmic})
+\end{itemize}
 
 \subsection{BONMIN}
-\cite{bonami2008algorithmic}
+see Bonami paper \cite{bonami2008algorithmic}
+\begin{itemize}
+\item introduces algorithmic framework BONMIN which is exact for convex MINLP, can be used as heuristic for non-convex MINLP
+\item use flexible branch-and-cut-scheme, \textbf{combination of BB and OA}
+	\begin{itemize}
+	\item uses outer approximations \textit{and} subproblem relaxations (relaxing integrality) to compute lower bounds
+	\item uses restrictions of integer variables $x\in X \cap \mathbb{Z}^n$ to $x\in \bar{X} \cap \mathbb{Z}^n$ to compute upper bounds
+	\item when \emph{only subproblem relaxations} used to compute lower bounds (as solution of NLP) \\
+	$\rightarrow$ classical branch-and-bound
+	\item when \textit{only outer approximations} used to compute lower bounds (as solution of MILP) \\
+	$\rightarrow$ classical OA algorithm
+	\end{itemize}
+\item implementation:
+	\begin{itemize}
+	\item \texttt{B-BB}: NLP Branch-and-Bound framework (based on interior-point NLP solver Ipopt)
+	\item \texttt{B-OA}: OA framework based on Ipopt, LP solver Clp
+	\item \texttt{B-Hyb}: hybrid algorithm obtaining either \texttt{B-BB} or \texttt{B-OA} or anything in between
+	\end{itemize}
+\item theoretical result: If $T=\{(x^1,y^1), ... ,(x^K,y^K)\}$ any set of points containing suitable points with KKT conditions, $P^{OA}(T)$ OA-relaxation around these points, then $P$ and $P^{OA}(T)$ are equivalent (having same optimal value, corresponding optimal solutions)
+\end{itemize}
 
 \subsection{filMINT}
 \cite{abhishek2010filmint}
+
+\subsection{BARON}
+\begin{itemize}
+\item solves \emph{non-convex} MINLPs
+\item spatial branch-and-bound
+\end{itemize}
 
 \bibliography{../library}{}
 \bibliographystyle{plain}
