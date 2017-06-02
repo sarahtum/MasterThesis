@@ -27,7 +27,6 @@
 \item Christian Kirches
 \item Bock-Gruppe Heidelberg
 \item oft gelesen: Grossmann
-\item McCormick (spatial branching, oft zitiert von \cite{burer2012non})
 \end{itemize}
 \subsection{Themen}
 \begin{itemize}
@@ -38,14 +37,9 @@
 \end{itemize}
 \subsection{Paper}
 \begin{itemize}
-\item R. Karuppiah, I.E. Grossman, A Lagrangian based branch-and-cut algorithm
-for global optimization of nonconvex mixed-integer nonlinear programs
-with decomposable structures
-\item . Leyffer, Integrating SQP and branch-and-bound for mixed integer
-nonlinear programming (use exact algo for convex MINLP as heuristic for non-convex)
-\item G. Nannicini, P. Belotti, Rounding-based heuristics for nonconvex MINLPs,
-Math. Program. Comput. (heuristic for non-convex MINLPs solving alternating sequence of NLPs and MILPs)
-\item literaturliste von \cite{burer2012non}
+%\item literaturliste von \cite{burer2012non}
+\item Sager PhD-Thesis
+\item Kirches PhD-Thesis
 \item Kirches, Bock, Leyffer: Modeling Mixed-Integer Constrained
 Optimal Control Problems in AMPL
 \item Kirches, Bock, Sager: Mixed-integer NMPC for predictive cruise control of heavy-duty trucks
@@ -53,8 +47,6 @@ Optimal Control Problems in AMPL
 Disjunctive Programs: A Review on Relaxations and Solution Methods (maybe similar methods can be used for non-convex MINLPs?)
 \item Grossmann: Cutting planes for improved global logic-based outer approximation
 for the synthesis of process networks (similar to non-convex outer approximation for MINLPs of Kesvan et al, but for non-convex generalized disjunctive programs instead)
-\item Ambrosio: Mixed integer nonlinear programming tools: an updated practical overview
-\item Bonami, Hijazi, Ouorou: An Outer-Inner Approximation for separable MINLP
 \end{itemize}
 \subsection{Fragen an Sebastian}
 \begin{itemize}
@@ -68,7 +60,7 @@ for the synthesis of process networks (similar to non-convex outer approximation
 \item logical statt integer? disjunctive programming?
 \end{itemize}
 \newpage
-\section{Branch and Bound}
+\section{Branch-and-Bound based approaches}
 \subsection{Combinatorial integral approximation [2010, Sager, Jung, Kirches]}
 see \cite{sager2011combinatorial}
 \begin{itemize}
@@ -97,8 +89,51 @@ see \cite{sager2011combinatorial}
 \item use WP solves that can be hot-started
 \item global convergence properties for convex MINLPs
 \end{itemize}
+
+\subsection{A Lagrangean based Branch-and-Cut algorithm for global optimization of nonconvex MINLPs with decomposable structures [Grossmann, Karuppiah, 2008]}
+see \cite{karuppiah2008lagrangean}
+\begin{itemize}
+\item decomposable structures often arise in two-stage stochastic programming problems
+\item decomposable here means: objective function can be written as sum of simpler functions
+\item propose branch-and-cut approach
+	\begin{itemize}
+	\item usually: lower bounds obtained by solving relaxations constructed by convexifying
+	\item often weak relaxations, resulting in weak bounds
+	\item basic idea: cutting plane technique based on Lagrangean decomposition to produce tight relaxations
+		\begin{itemize}
+		\item solve subproblems obtained by decomposing ($P$) following Lagrangean decomposition
+		\item use global subproblem solutions to generate (valid, tightening) cuts, add them to convex relaxation (master problem ($R$) of original model
+		\item upper bounds obtained by heuristic
+		\item termination: fathom node in BB tree if lower bound exceeds overall upper bound, approximation gap below tolerance, upper bound of $-\infty$
+		\item branch domain of node
+		\end{itemize}
+	\end{itemize}
+\item convergence result (informal argument)
+\item two real-world examples: solution time reduced by more than order of magnitude compared to conventional BB scheme (BARON), but not established for large-scale problems
+\end{itemize}
+
+\subsection{Integrating SQP and Branch-and-Bound for Mixed Integer Nonlinear Programming [Leyffer, 2001]}
+see \cite{leyffer2001integrating}
+\begin{itemize}
+\item in contrast to "decomposition" approaches (like BB, OA) separating nonlinear part from integer part, Leyffer suggests integrated approach
+\item BB approach, but: NLP problem at each node does not need to be solved to optimality
+\item instead: branching is allowed after each iteration of NLP solver (here: Sequential Quadratic Programming solver), i.e. branch early\\
+$\rightarrow$ non-linear part of MINLP is thus solved whilst searching the tree, i.e. tree search and iterative solution of NLP are interlaced
+\item idea first presented in \cite{borchers1994improved}, improvements in this paper
+	\begin{itemize}
+	\item prove that no need for computing lower bounds
+	\item use own SQP solver
+	\item new heuristic when to branch early
+	\end{itemize}
+\item idea similar to Quesada and Grossmann \cite{quesada1992lp} but they solve NLP problems at some nodes, new solver usually solves only one QP problem at each node
+\item algorithm \emph{only for convex} MINLP, only heuristic for non-convex
+\item convergence proof, even global when slight changes (use trust-region method to enforce global convergence for SQP)
+\item heuristic for non-convex MINLP: nodes no longer fathomed if QP problem is infeasible, instead solve feasibility problem until feasible QP problem is encountered
+\item improves classical BB by factor up to 3
+\end{itemize}
+
 \newpage
-\section{Outer approximation}
+\section{Outer-approximation based approaches}
 \subsection{FilMINT: An Outer-Approximation-Based Solver for Nonlinear Mixed Integer Programs [Abhishek, Leyffer, Linderoth, 2008]}
 \textcolor{red}{PROBLEM:} convexity
 \begin{itemize}
@@ -114,7 +149,6 @@ see \cite{sager2011combinatorial}
 \end{itemize}
 \end{itemize}
 
-\newpage
 \subsection{Outer approximation algorithms for separable nonconvex mixed-integer nonlinear programs [Kesavan, Allgor, Gatzke, Barton, 2004]}
 \label{sec:OA_nonconvex}
 see \cite{kesavan2004outer}\\
@@ -167,8 +201,16 @@ see \cite{kesavan2004outer}\\
 	\item experimental results suggest: this decomposition strategy is more efficient (w.r.t. CPU time) when compared to currently available branch-and-bound algorithms for non-convex MINLPs
 	\end{itemize}
 \end{itemize}
+
+\subsection{An Outer-Inner Approximation for separable MINLPs}
+\begin{itemize}
+\item propose three improvements to OA algorithms
+\item for \emph{convex} MINLPs
+\item implemented on \texttt{BONMIN}
+\end{itemize}
+
 \newpage
-\section{neither Branch-and-Bound nor outer approximation}
+\section{neither BB- nor OA-based approaches}
 \subsection{The integer approximation error in mixed-integer optimal control [2010, Sager, Bock]}
 \begin{itemize}
 \item Problem: MINLP that come from discretizing MIOCPs cannot efficiently be solved using nonlinear BnB or outer approximation (due to large number of integer variables)
@@ -326,7 +368,7 @@ see \cite{bonami2008algorithmic}
 \end{itemize}
 
 \newpage
-\section{General}
+\section{General papers about MINLPs}
 \subsection{Mixed-integer nonlinear optimization [Belotti, Kirches, Leyffer, Majahan, 2013]}
 \begin{itemize}
 \item models and applications of MINLP
@@ -348,7 +390,32 @@ see \cite{sager2005numerical}
 \end{itemize}
 \subsection{Fast Numerical Methods for Mixed-Integer Nonlinear Model-Predictive Control [Kirches, PhD-Thesis, 2010]}
 \subsection{Mixed integer nonlinear programming tools: an updated practical overview [Ambrosio, 2013]}
-\url{https://link.springer.com/article/10.1007/s10479-012-1272-5}
+see \cite{d2013mixed}
+\begin{itemize}
+\item difficulties with nonlinear functions and how to use modeling languages to overcome them
+	\begin{itemize}
+	\item most widely used algebraic modeling languages in MINLP are \texttt{AMPL} and \texttt{GAMS}
+	\end{itemize}
+\item overview over MILP
+\item overview over NLP
+\item overview over MINLP
+\item overvie over MINLP solvers
+\end{itemize}
+
+\section{Other algorithms}
+\subsection{Rounding-based heuristics for nonconvex MINLPs [Belotti, Nannicini, 2009]}
+see \cite{nannicini2009rounding}
+\begin{itemize}
+\item two primal heuristics for non-convex MINLPs
+	\begin{itemize}
+	\item feasibility heuristic aiming at finding initial feasible solution
+	\item improvement heuristic searching for improved solution in neighborhood of given point
+	\end{itemize}
+\item basic idea: rounding solution of continous NLP with linear constraints
+\item each rounding step accomplished through solving MILP
+\item effective in practice
+\end{itemize}
+
 \bibliography{../library}{}
 \bibliographystyle{plain}
 \end{document}

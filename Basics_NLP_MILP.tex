@@ -46,6 +46,13 @@ There are two ways to generate cuts. The first, called Gomory cuts, generates cu
 \subsection{Solving Algorithms}
 \subsubsection{Newton's Method or Sequential Quadratic Programming}
 \begin{itemize}
+\item SQP solved sequence of quadratic programming (QP) approximations 
+\item they are obtained by replacing ...
+	\begin{itemize}
+	\item ... the nonlinear constraints by a linear first order Taylor series approximation
+	\item ... the nonlinear objective by second order Tylor series approximation, augmented by second order information from the constraints
+	\end{itemize}	 
+\item under certain conditions: local quadratical convergence
 \item active set
 \end{itemize}
 \subsubsection{Interior-Point Methods}

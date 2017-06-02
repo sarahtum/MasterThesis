@@ -71,30 +71,37 @@
 \item single-tree (like Branch-and-Bound, Branch-and-Cut) 
 \item multi-tree (like outer approximation, Benders decomposition)
 \end{itemize}
-
+\item following overview roughly following \cite{d2013mixed}
 \end{itemize}
 
-
-\subsection{Nonlinear Branch-and-Bound}
+\subsection{For convex MINLPs}
+\subsubsection{Nonlinear Branch-and-Bound}
 \begin{itemize}
 \item compute lower bounds for subproblems (obtained by branching) by solving their continous relaxations
+\item given fractional value $y_j^*$ in solution $(x^*,y^*)$ of continuous relaxation divide into subproblems by adding constraint $y_j \leq \left \lfloor{y_j^*}\right \rfloor$ or $y_j \geq \left \lceil{y_j^*}\right \rceil$ 
+\item iterate until solution of continuous relaxation of subproblem is integer feasible or infeasible or lower bound is not smaller than current best solution
 \item requires solution of large number of NLP
 \item nearly impossible to effectively hot-start NLP solver (which is very different to ILP)
 \item main reason for this: factors are outdated as soon as a step is taken because Hessian and Jacobian matrices are nonlinear and non constant
 \end{itemize}
 
-\subsection{Outer-approximation}
+\subsubsection{Outer-approximation}
 \begin{itemize}
+\item originally developed (apparently?) by Duran/Grossmann (1986) and Fletcher/Leyffer (1994)
 \item idea: avoid huge number of NLPs, instead use available well-advanced MILP solvers
 \item solve \emph{alternating} finite sequence of NLP subproblems (for obtaining feasible solutions that act as upper bounds, around which we linearize and modify the MILP)
 \item and relaxed (linearized) versions of a MILP master program (solutions act as lower bounds)
 \item assumptions: linearity of integer (or discrete) variables, convexity of nonlinear functions involving continuous variables
 \item \textbf{Upper Bounding NLP Subproblem:} fix $y=y^k$ and solve non-linear problem (giving an upper bounding solution $x^k$)
+	\begin{itemize}
+	\item if subproblem is not feasible, a \emph{feasibility NLP subproblem} is solved and its optimal solution is used instead
+	\end{itemize}
 \item \textbf{MILP Master Problem:} 
 	\begin{itemize}
 	\item idea: develop equivalent linear representatiton (i.e. MILP) of original MINLP
 	\item do so by linearizing MINLP around $x=x^k$ (the problem now is a relaxation of original MINLP, giving a lower bound)
 	\item or - more general - by replacing the nonlinear functions by polyhedral outer approximations
+	 \item note: by convexity this OA cut does not cut off any solutions
 	\end{itemize}
 \item done when upper and lower bound are same, otherwise update new $y^k$ as new fixed value of $y$ in next NLP subproblem
 \end{itemize}
@@ -110,7 +117,7 @@ See figure \ref{fig:OA_FlowChart} for a schematic overview
 \noindent
 See \cite{duran1986outer} of Duran and Grossmann (1987) for an overview. See \href{https://optimization.mccormick.northwestern.edu/index.php/Outer-approximation_(OA)}{here} for a numerical example.
 
-\subsection{Generalized Benders decomposition}
+\subsubsection{Generalized Benders decomposition}
 from \cite{sager2005numerical}, p. 60
 \begin{itemize}
 \item similar to outer approximation but using another master program, including the Langrangian
@@ -118,12 +125,38 @@ from \cite{sager2005numerical}, p. 60
 \item hardly used anymore today
 \end{itemize}
 
-\subsection{Spatial branch-and-bound}
+\subsubsection{Extended Cutting Plane Method}
+see e.g. practical overview of D'Ambrosio \cite{d2013mixed}
+\subsubsection{LP/NLP based Branch-and-Bound}
+see e.g. practical overview of D'Ambrosio \cite{d2013mixed}
+\subsubsection{Hybrid Algorithms}
+\begin{itemize}
+\item combine BB and OA methods
+\item e.g. algorithm used in \texttt{BONMIN} solver
+\end{itemize}
+\subsection{For non-convex MINLPs}
+\begin{itemize}
+\item methods that are exact for convex MINLP work as heuristics
+\item problems with non-convexity: 
+	\begin{itemize}
+	\item NLP subproblems have many local minima, solvers do not guarantee global optimality
+	\item linearization cuts are in general not valid for non-convex constraints
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Use of convex envelopes or under-estimators}
+see \cite{d2013mixed}
+\begin{itemize}
+\item add auxiliary variables "linearizing" non-linearities of original constraints. 
+\item complex nonlinearities are subdivided into simpler ones, at cost of additional variables and constraints
+\item for these simpler ones use simple known envelopes
+\end{itemize}
+\subsubsection{Spatial branch-and-bound}
 \begin{itemize}
 \item algorithm for non-convex MINLPs
 \item underestimation of objective, overestimation of feasible set by appropriate convex under-estimators
 \end{itemize}
-\subsection{Extended Cutting Plane Method}
+
 
 \section{MINLP Modeling Practices}
 see \cite{Belotti13}, page 13
@@ -148,12 +181,16 @@ see \cite{sager2005numerical}, page 53
 see \cite{raman1994modelling}, 
 a framework helping to generate effective models
 \section{MINLP solvers}
-\subsection{DICOPT}
+\subsection{for convex MINLPs}
+\subsubsection{DICOPT}
+see practical overview \cite{d2013mixed}
 \begin{itemize}
-\item implements an OA algorithm (laut \cite{bonami2008algorithmic})
+\item \textbf{DI}screte and \textbf{C}ontinupus \textbf{OPT}imizer
+\item solves MINLP problems where nonlinearities only involve continuous variables, binary and integer variables only in linear functions
+\item implements an OA algorithm (plus equality relaxation, augmented penalty)
 \end{itemize}
 
-\subsection{BONMIN}
+\subsubsection{BONMIN}
 see Bonami paper \cite{bonami2008algorithmic}
 \begin{itemize}
 \item introduces algorithmic framework BONMIN which is exact for convex MINLP, can be used as heuristic for non-convex MINLP
@@ -174,13 +211,52 @@ see Bonami paper \cite{bonami2008algorithmic}
 	\end{itemize}
 \item theoretical result: If $T=\{(x^1,y^1), ... ,(x^K,y^K)\}$ any set of points containing suitable points with KKT conditions, $P^{OA}(T)$ OA-relaxation around these points, then $P$ and $P^{OA}(T)$ are equivalent (having same optimal value, corresponding optimal solutions)
 \end{itemize}
-
-\subsection{filMINT}
-\cite{abhishek2010filmint}
-
-\subsection{BARON}
+practical overview \cite{d2013mixed}:
 \begin{itemize}
-\item solves \emph{non-convex} MINLPs
+\item to solve heuristically a non-convex problem: only use \texttt{B-BB}
+\item several options provided to treat non-convex problems
+\end{itemize}
+
+\subsubsection{filMINT}
+see filMINT paper \cite{abhishek2010filmint}
+\begin{itemize}
+\item solver for convex MINLPs at cost which is a small multiple of cost of a comparable MILP
+\item avoids complete re-solution of master MILP by adding new linearizations at open nodes of branch-and-bound tree whenever integer solution is found
+\item FilMINT combines MINTO branch-and-cut framework for MILP (allows to use cutting planes, primal heuristics etc.)  with filterSQP for NLPs (active set solver allowing warm-starting, taking advantage of good initial primal and dual iterates)
+\item algorithm used: \textcolor{blue}{LP/NLP-based branch-and-bound} (LP/NLP-BB) \cite{quesada1992lp}
+\begin{itemize}
+\item similar to outer-approximation, but:
+\item instead of solving alternating sequence of MILP master problems, NLP subproblems: interrupt solution of MILP master whenever new integer assignment is found, then solve a NLP subproblem
+\item (as usual:) solution of this subproblem provides new outer approximation added to master MILP, solving updated MILP master continues
+\item thus: only single branch-and-cut tree is created and searched
+\end{itemize}
+\end{itemize}
+
+\subsection{further solvers}
+all mentioned in practical overview \cite{d2013mixed}
+\begin{itemize}
+\item LAGO (LAgrangian Gloabl Optimizer, branch-and-cut)
+\item LINGO and LINDOGlobal (branch-and-cut, can be turned into heuristic using multistart techniques for NLPs)
+\item MINLPBB (branch-and-bound)
+\item MINOPT (generalized Bender decomposition, outer approximation)
+\item MINOTAUR (nonlinear branch-and-bound for convex MINLPs)
+\item SBB (branch-and-bound, exact for convex, limit fathoming of infeasible nodes in non-convex case)
+\item SCIP (global optimality for convex and non-convex, spatial branch-and-bound)
+\end{itemize}
+
+\subsection{for non-convex MINLPs}
+\subsubsection{BARON}
+see practical overview \cite{d2013mixed}
+\begin{itemize}
+\item solves non-convex MINLPs to global optimality
+\item spatial branch-and-bound
+\item one of the most effective solvers
+\end{itemize}
+
+\subsubsection{COUENNE}
+\begin{itemize}
+\item solves non-convex MINLPs to global optimality
+\item \textbf{C}onvex \textbf{O}ver and \textbf{U}nder \textbf{EN}velopoes for \textbf{N}onlinear \textbf{E}stimation
 \item spatial branch-and-bound
 \end{itemize}
 
