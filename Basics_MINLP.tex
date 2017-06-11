@@ -23,9 +23,11 @@
 \section{Basic facts about MINLP}
 \begin{itemize}
 \item MINLP is NP-hard (clear as it includes MILP)
-\item MINLP is undecidable (i.e. there are qudratically constrained IP for which no computing device can compute optimum for all instances of the class). But we're ok if $X$ is compact or all functions are convex.
+\item MINLP is undecidable (i.e. there are quadratically constrained IP for which no computing device can compute optimum for all instances of the class). But we're ok if $X$ is compact or all functions are convex.
 \item Online Benchmark Library at \url{https://mintoc.de/index.php/Main_Page}, providing set of application problems to evaluate numerical optimization methods
 \item MIOCPs: mixed-integer nonlinear optimization problems constrained by a system of ODEs
+\item
+\item convention here: $x$ continuous variable, $y$ integer variable
 \end{itemize}
 
 \section{Two fundamental concepts}
@@ -50,7 +52,9 @@
  
 \section{Relaxations}
 \begin{itemize}
-\item Relaxing integrality (yielding a \textcolor{blue}{\textit{nonlinear relaxation}}), used in Branch-and-Bound
+\item Relaxing integrality (yielding a \textcolor{blue}{\textit{nonlinear relaxation}}), used in Branch-and-Bound\\
+\textbf{Note:} An NLP can also be obtained as an \textit{restriction} by fixing $y=y^k$
+
 \item Relaxing convex constraints with a set of supporting hyperplanes (obtained by Taylor, yielding a \textcolor{blue}{\textit{polyhedral relaxation}}), used in outer approximation methods
 \item Relaxing non-convex constraints (using convex underestimators), used in spatial Branch-and-Bound
 \end{itemize}
@@ -77,7 +81,7 @@
 \subsection{For convex MINLPs}
 \subsubsection{Nonlinear Branch-and-Bound}
 \begin{itemize}
-\item compute lower bounds for subproblems (obtained by branching) by solving their continous relaxations
+\item compute lower bounds for NLP-subproblems (obtained by branching) by solving their continuous relaxations
 \item given fractional value $y_j^*$ in solution $(x^*,y^*)$ of continuous relaxation divide into subproblems by adding constraint $y_j \leq \left \lfloor{y_j^*}\right \rfloor$ or $y_j \geq \left \lceil{y_j^*}\right \rceil$ 
 \item iterate until solution of continuous relaxation of subproblem is integer feasible or infeasible or lower bound is not smaller than current best solution
 \item requires solution of large number of NLP
@@ -107,12 +111,12 @@
 \end{itemize}
 See figure \ref{fig:OA_FlowChart} for a schematic overview
 
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=1.2]{OA_FlowChart.png}
-\caption{Schematic Overview of Outer Approximation Algorithm by Grossmann and Duran}
-\label{fig:OA_FlowChart}
-\end{figure}
+%\begin{figure}[htb]
+%\centering
+%\includegraphics[scale=1.2]{OA_FlowChart.png}
+%\caption{Schematic Overview of Outer Approximation Algorithm by Grossmann and Duran}
+%\label{fig:OA_FlowChart}
+%\end{figure}
 
 \noindent
 See \cite{duran1986outer} of Duran and Grossmann (1987) for an overview. See \href{https://optimization.mccormick.northwestern.edu/index.php/Outer-approximation_(OA)}{here} for a numerical example.
@@ -139,8 +143,8 @@ see e.g. practical overview of D'Ambrosio \cite{d2013mixed}
 \item methods that are exact for convex MINLP work as heuristics
 \item problems with non-convexity: 
 	\begin{itemize}
-	\item NLP subproblems have many local minima, solvers do not guarantee global optimality
-	\item linearization cuts are in general not valid for non-convex constraints
+	\item NLP subproblems have many local minima, solvers do not guarantee global optimality ($\rightarrow$ problem with BB-based approaches)
+	\item linearization cuts are in general not valid for non-convex constraints ($\rightarrow$ problem with OA-based approaches)
 	\end{itemize}
 \end{itemize}
 
@@ -263,4 +267,3 @@ see practical overview \cite{d2013mixed}
 \bibliography{../library}{}
 \bibliographystyle{plain}
 \end{document}
-
