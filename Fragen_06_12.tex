@@ -1,0 +1,123 @@
+\documentclass{article}
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas, matrices,
+\usepackage{amssymb} % for mathbb	
+\usepackage{enumitem} % for hiding bullets in itemize environment
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref} % for \ref, \eqref, \url(?)
+\usepackage[dvipsnames]{xcolor} % for textcolors
+\usepackage{cite} % for citations
+\usepackage{verbatim} % for comment environment
+\title{\textbf{Fragen vor Treffen 12.06.}}
+%\author{}
+\date{}
+\begin{document}
+\maketitle
+\paragraph{Paper allgemein}
+\begin{itemize}
+\item Sager: "first discretize, then optimize" $\rightarrow$ large number of integer variables\\
+\textit{Werden wir auch so machen, wenn Dynamik (also ODE) mitmodelliert wird, da indirekte Methoden zu aufwendig}
+\item Optimal control? (H\"angt davon ab, ob geeignete Kostenfunktion)\\
+\textit{Mit Roboterdynamik kriegen wir ein OCP. Ob wir das so im Abstract erwähnen, entscheiden wir morgen.}
+\end{itemize}
+
+\paragraph{Paper W\"achter}
+\begin{itemize}
+\item keine so tollen Laufzeiten, \texttt{BONMIN} (als Heuristik) viel schneller\\
+\textit{Wir betrachten kein riesiges Problem, können außerdem Größe über Feinheit der Diskretisierung selbst etwas steuern.}
+\item \"Anderung \texttt{BONMIN/IPOPT} zu anderen Algos m\"oglich, ohne alles neu zu programmieren?\\
+\textit{Der Plan ist ohnehin, alles selber zu programmieren. Da \texttt{BONMIN} und \texttt{IPOPT} open source, sollte das machbar sein. Sebastian hat W\"achter-\texttt{AMPL}-Implementierung nicht open source gefunden.}
+\item \textit{Nicht so gut an W\"achter: wenig Beweise (nur convergence analysis). Gleiches Problem mit Kesavan (da viele Beweise "wegzitiert", Mathematik ist also vorhanden)}
+\item \textit{Gut: viele numerische Beispiele, kann man in Arbeit als Vergleichsreferenz verwenden ("Haben Algorithmus implementiert, der Ergebnisse von W\"achter-Paper f\"ur diese Beispiele reproduziert", auch wenn es dann f\"ur Robotik-Problem nicht funktioniert)}
+\end{itemize}
+
+\paragraph{Modell}
+\begin{itemize}
+\item Constraints, objective?\\
+\textit{Haben uns zweierlei MINLPs angeschaut: einmal statisches MINLP, einmal dynamisches MIOCP (siehe n\"achste Seite)}
+\item wo treten integer-Variablen auf?\\
+\textit{Nur "Objekt gegriffen bzw. nicht gegriffen", i.e. nur eine diskrete Variable \textbf{pro Zeitschritt}}
+\item separabel? 
+\textcolor{green}{\textit{noch ungekl\"art}}
+\item Gr\"o\ss{}enordnung?
+\textcolor{green}{\textit{noch ungekl\"art}}
+\item inklusive Dynamik?
+\textit{Das ist definitiv das Ziel}
+\end{itemize}
+
+\paragraph{Erwartungen}
+\begin{itemize}
+\item Laufzeiten?
+\textcolor{green}{\textit{noch ungekl\"art}}
+\item nur vereinfachtes Modell?
+\textit{Ja}
+\item besser: optimal, Dynamik\\
+\textit{Und vielleicht lernen wir aus dem Modell am Ende noch was, neue Ideen, evtl wiederverwendbar als Teil eines Learning-Ansatzes. Dauerhaftes Rumschrauben an Parametern und Heuristiken-Basteln kann keine L\"osung sein.}
+\end{itemize}
+
+
+\newpage
+\paragraph{@Modell:}
+\begin{enumerate}
+\item \textit{Statisches} MINLP:
+	\begin{itemize}
+	\item state $x$ enth\"alt Roboterzustand und Objektzustand
+	\item binary variable $w$ beschreibt, in welcher Mannigfaltigkeit wir uns befinden
+	\item $F_1$ beschreibt zul\"assige Konfigurationen in placement manifold ($x$ zul\"assig, wenn $F_1(x)\leq 0$),\\ $F_2$ f\"ur grasp manifold
+	\item Diskretisierung $\tau_0,...,\tau_N$
+	\item Modell:
+	\begin{align}
+	find(x,w) \text{ s.t.}&\label{eq:obj}\\
+	 &w(\tau) F_1(x(\tau)) + (1-w(\tau))F_2(x(\tau)) &&\leq 0 &\forall \tau\label{eq:zulässig}\\
+	 &\big(w(\tau+1)-w(\tau)\big)\big(x(\tau+1)-x(\tau)\big) &&= 0 &\forall \tau\label{eq:transition}\\
+	 &\|x(\tau + 1)-x(\tau)\| &&\leq \alpha \label{eq:abstand}
+	\end{align} 
+		\begin{itemize}
+		\item @\eqref{eq:obj}: hier evtl. \"ahnlich gewichtete objective function wie Philipp sie verwendet
+		\item @\eqref{eq:zulässig}: Alle Zust\"ande zu allen Diskretisierungszeitpunkten sind zul\"assig.
+		\item @\eqref{eq:transition}: Wenn $w$ das Vorzeichen wechselt, muss Position gleich bleiben.
+		\item @\eqref{eq:abstand}: damit Lösung nicht nur sechs Punkte enth\"alt, i.e. ausreichend viele "samples"
+		\end{itemize}
+	\end{itemize}
+\item \textit{Dynamisches} Optimal Control Problem (so k\"onnen wir es immer aufschreiben, die Frage ist, wie kompliziert es ist)
+	\begin{itemize}
+	\item Massenmatrix $M$, \"andert sich durch Greifen des Objekts, da dieses Masse hat
+	\item Korriolis- und Gravitationskr\"afte stecken in $\rho$
+	\item Torques $T$
+	\item Roboterdynamik:
+		\begin{align}
+		T = M(q) \ddot{q} + \rho(q,\dot{q}) \label{eq:dynamic}
+		\end{align}
+		\begin{itemize}
+		\item kann man umschreiben als $1^{st}$ order ODE (via $\begin{pmatrix} q\\\dot{q}\end{pmatrix}$)
+		\item ODE diskretisieren: $\hat{x}_{t+1}= \Phi(x_t,u_t)$ s.t. $x_{t+1}-\hat{x}_{t+1}=0$ mit Integrator $\Phi$ (nichtlinear)
+		\item verwende hierzu expliziten Euler, Runge-Kutta-Verfahren,...
+		\item L\"osungsvektor $(x_0,u_0,x_1,u_1,...,x_T,u_T)$, sodass \#integer Variablen = 1 $\cdot$ \#Zeitschritte\\
+		$\rightarrow$ evtl doch in Sager-Paper f\"ur gro\ss{}e Anzahlen an integer Variablen (allerdings wird unser $T$ nicht riesig, i.e. nicht in $\mathcal{O}(10^3) - \mathcal{O}(10^4)$)
+		\end{itemize}
+	\end{itemize}
+\item Vergleich: 
+	\begin{itemize}
+	\item Anzahl integer variables bei beiden \"ahnlich
+	\item Nichtlinearit\"aten in statischem Modell evtl. sch\"ner, Integrator in dynamischen Modell sicher h\"asslich
+	\end{itemize}
+\end{enumerate}
+
+\newpage
+\paragraph{Zwei S\"aulen:} Arbeit braucht roten Faden, insbesondere Verknüpfung Heuristik und MINLP. (Hauptinteresse Siemens: Beschleunigung durch Heuristik f\"ur Manipulationsplanung. Hauptinteresse Sebastian/Uni: Modellierung MINLP)
+\begin{enumerate}
+\item Vergleich  erweiterte Heuristik mit MINLP Problem \eqref{eq:obj} - \eqref{eq:abstand}.
+	\begin{itemize}
+	\item L\"osung des MINLP Problems oben ist mindestens so gut wie das, was Heuristik liefert. \\$\rightarrow$ Vergleich m\"oglich
+	\item evtl. kann MINLP sogar helfen, Heuristik zu entwerfen
+	\end{itemize}
+\item Vergleich MIOCP/MINLP (inklusive Dynamik \eqref{eq:dynamic}) mit Philipps Ansatz + dynamisches Post-Processing
+	\begin{itemize}
+	\item im Idealfall: Haben wir ein Verfahren, das Modell inklusive Dynamik \eqref{eq:dynamic} l\"ost, k\"onnen wir damit auch Modell \eqref{eq:obj} - \eqref{eq:abstand} l\"osen, sodass S\"aule 1 nicht mehr viel Aufwand
+	\end{itemize}
+\end{enumerate}
+\end{document}

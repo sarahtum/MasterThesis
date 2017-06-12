@@ -1,0 +1,48 @@
+\documentclass{article}
+
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas
+\usepackage{amssymb} % for mathbb	
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{cite}
+\usepackage{graphicx}
+\title{\textbf{Basics about Optimal control}}
+%\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Basic Definitions}
+\begin{itemize}
+\item Optimal Control is process of determining \textit{control and state trajectories} for dynamic system over period of time minimizing some cost function
+\item General case according to \url{http://www.scholarpedia.org/article/Optimal_control}\\
+\textbf{\textcolor{blue}{Bolza Problem}}:
+\begin{align}
+\min_{u} ~~~ & J = \varphi(x(t_f)) + \int_{t_0}^{t_f} L(x(t), u(t),t) ~~ dt \label{eq:obj}\\
+&\text{s.t. } \dot{x}(t) = f(x(t),u(t),t),  x(t_0) = x_0 \label{eq:ODE}
+\end{align}
+where $[t_0,t_f]$ is time interval of interest, $x:[t_0,t_f]\rightarrow \mathbb{R}^{n_x}$ is state vector, $u:[t_0,t_f]\rightarrow \mathbb{R}^{n_u}$ is control vector, $\varphi$ is terminal cost function, $L$ is intermediate cost function, $f$ is vector field.
+
+Equation \eqref{eq:ODE} represents dynamics of the system and initial state condition.
+
+\item \textbf{\textcolor{blue}{Mayer Problem}}: if $L(x,u,t)=0$
+\item \textbf{\textcolor{blue}{Lagrange Problem}}: if $\varphi(x(t_f))=0$
+\end{itemize}
+
+\section{Catchwords to look up}
+\begin{itemize}
+\item Dynamic programming (Richard Bellmann)
+\end{itemize}
+
+
+
+
+\end{document}

@@ -1,0 +1,51 @@
+\documentclass{article}
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas
+\usepackage{amssymb} % for mathbb	
+\usepackage{enumitem} % for hiding bullets in itemize environment
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref} % for \ref, \eqref, \url(?)
+\usepackage[dvipsnames]{xcolor} % for textcolors
+\usepackage{cite} % for citations
+\usepackage{verbatim} % for comment environment
+\title{\textbf{Fragen vor Treffen 13.06.}}
+%\author{}
+\date{}
+\begin{document}
+\maketitle
+\paragraph{Paper}
+\begin{itemize}
+\item Wo hat Philipp sein Paper publiziert?
+\end{itemize}
+
+\paragraph{Abstract}
+\begin{itemize}
+\item Schreiben wir MIOCP oder MINLP?
+\end{itemize}
+
+
+\paragraph{Modell}
+\begin{itemize}
+\item Diskrete Variable modelliert "gegriffen vs. nicht gegriffen", aber eigentlich ist Griff ja nicht vorgegeben, sondern sollte aus Modell entstehen. Nur bei Philipp werden zun\"achst placements und grasps gesampelt...\\
+$\rightarrow$ betrachte $N$ (klein) viele grasps, z.B. einen f\"ur jede sichtbare Objektseite?
+\item separabel?
+\item Gr\"o\ss{}enordnung?
+\item Was sind Schwierigkeiten?
+\end{itemize}
+
+\paragraph{S\"aulen}
+\begin{itemize}
+\item @S\"aule 1: MINLP Problem l\"ost ja nicht das gleiche Problem wie erweiterte Heuristik, sondern wie Philipps ganzer Algorithmus. D.h. optimale Lsg des MINLP m\"usste auch wieder mit Output des ganzen Algorithmus verglichen werden, evtl. aber ohne Postprocessing.
+\item Wie soll das schnell wieder gehen, dass MINLP 1 bei Erstellen der erweiterten Heuristik hilft?
+
+\end{itemize}
+
+\paragraph{Erwartungen}
+\begin{itemize}
+\item Konkrete Laufzeiten?
+\end{itemize}
+\end{document}

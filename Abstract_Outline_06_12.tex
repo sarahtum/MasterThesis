@@ -1,0 +1,102 @@
+\documentclass{article}
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute 
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und 
+                     % die W\"orter werden anhand der neue Rechtschreibung 
+		     % automatisch getrennt.  
+\usepackage{amsmath}	% for formulas
+\usepackage{amssymb} % for mathbb	
+\usepackage{enumitem} % for hiding bullets in itemize environment
+\usepackage[margin=1in]{geometry} % for definition of margin     
+\usepackage{hyperref} % for \ref, \eqref, \url(?)
+\usepackage[dvipsnames]{xcolor} % for textcolors
+\usepackage{cite} % for citations
+\usepackage{verbatim} % for comment environment
+\title{\textbf{Outline for Abstract}}
+%\author{}
+\date{}
+\begin{document}
+
+\maketitle
+\section{Abstract}
+
+\paragraph{Content:}
+\begin{itemize}
+\item General introduction:
+	\begin{itemize}
+	\item explain problem of motion planning and manipulation planning
+	\item goal of thesis: model this using MINLP, solved as in paper, comparison to state-of-the-art sampling heuristic
+	\end{itemize}
+
+\item Part I: Mathematics: MINLP
+	\begin{itemize}
+	\item basics in MINLP
+	\item one approach for non-convex MINLP with certain separability properties: paper of W\"achter
+	\item possible modifications (different solvers than BONMIN, problem specific)
+	\end{itemize}
+
+\item Part II: Mathematics: modeling as MINLP
+	\begin{itemize}
+	\item modeling our problem as MINLP, applying algorithm of paper 
+	\item Types of constraints, robot dynamics?	
+	\end{itemize}		
+	
+\item Part III: Robotic: Extension of ellipsoidal heuristic
+	\begin{itemize}
+	\item describe current sampling procedure
+	\item describe existing heuristic for \textit{motion planning}
+	\item describe Philipps approach how to extend sampling to manipulation planning
+	\item identify difficulties for extension to \textit{manipulation planning}
+	\item identify sections where heuristic can be easily adapted
+	\item hopefully come up with ideas how to extend heuristic
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Expectations:}
+\begin{itemize}
+\item MINLP:
+	\begin{itemize}[label={}]
+	\item \textcolor{red}{$-$} MINLP won't be competitive in terms of runtime
+	\item \textcolor{red}{$-$} MINLP only for simplified version of problem
+	\item \textcolor{green}{+} optimal solution (even globally)
+	\item \textcolor{green}{+} able to embed robot dynamics (not like sampling approach: optimal solution w.r.t. objective function not containing dynamics)
+	\end{itemize}
+\item heuristic for manipulation planning:
+	\begin{itemize}
+	\item 
+	\end{itemize}
+\end{itemize}
+\newpage
+\section{Model}
+\paragraph{Objective Function:}
+\begin{itemize}
+\item minimize completion time
+\item 
+\end{itemize}
+
+
+
+\paragraph{Constraints:}
+\begin{itemize}
+\item Robot Dynamics
+	\begin{itemize}
+	\item $1^{st}$ order ODE
+	\item states: joint angles, joint velocities (i.e. \texttt{MultiDOFState})
+	\item control: joint torques
+	\end{itemize}
+\item collision-free
+\item upper and lower bounds on states
+\item interaction with pick-and-place object
+\item 
+\item 
+\end{itemize}
+
+\paragraph{Variables:} integer variables?
+\begin{itemize}
+\item 
+\item 
+\end{itemize}
+
+\paragraph{Separability:} ?
+
+\end{document}

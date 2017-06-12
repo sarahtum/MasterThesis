@@ -111,12 +111,12 @@
 \end{itemize}
 See figure \ref{fig:OA_FlowChart} for a schematic overview
 
-%\begin{figure}[htb]
-%\centering
-%\includegraphics[scale=1.2]{OA_FlowChart.png}
-%\caption{Schematic Overview of Outer Approximation Algorithm by Grossmann and Duran}
-%\label{fig:OA_FlowChart}
-%\end{figure}
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=1.2]{OA_FlowChart.png}
+\caption{Schematic Overview of Outer Approximation Algorithm by Grossmann and Duran}
+\label{fig:OA_FlowChart}
+\end{figure}
 
 \noindent
 See \cite{duran1986outer} of Duran and Grossmann (1987) for an overview. See \href{https://optimization.mccormick.northwestern.edu/index.php/Outer-approximation_(OA)}{here} for a numerical example.
@@ -132,7 +132,8 @@ from \cite{sager2005numerical}, p. 60
 \subsubsection{Extended Cutting Plane Method}
 see e.g. practical overview of D'Ambrosio \cite{d2013mixed}
 \subsubsection{LP/NLP based Branch-and-Bound}
-see e.g. practical overview of D'Ambrosio \cite{d2013mixed}
+see e.g. practical overview of D'Ambrosio \cite{d2013mixed}\\
+or see section \ref{sec:filmint} about \texttt{filMINT} which implements this approach
 \subsubsection{Hybrid Algorithms}
 \begin{itemize}
 \item combine BB and OA methods
@@ -222,6 +223,7 @@ practical overview \cite{d2013mixed}:
 \end{itemize}
 
 \subsubsection{filMINT}
+\label{sec:filmint}
 see filMINT paper \cite{abhishek2010filmint}
 \begin{itemize}
 \item solver for convex MINLPs at cost which is a small multiple of cost of a comparable MILP
