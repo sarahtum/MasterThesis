@@ -1,0 +1,34 @@
+\ProvidesPackage{beamerthemegarching}
+
+\RequirePackage{pgfopts}
+\pgfkeys{/garching/.cd,%
+  .search also={%
+    /garching/inner,%
+    /garching/outer,%
+    /garching/color,%
+    /garching/font,%
+  }%
+}%
+
+\newcommand{\garching@setdefaults}{%
+  \pgfkeys{/garching/.cd,%
+    numbering=none,%
+  }%
+}%
+
+
+\useoutertheme[]{garching}
+\useinnertheme[]{garching}
+\usefonttheme[]{garching}
+\usecolortheme{tum}
+
+\garching@setdefaults
+\ProcessPgfOptions{/garching}
+
+
+\endinput
+%%
+%% End of file `beamerthememegarching.sty'.
+
+% ====================================================================================================
+
