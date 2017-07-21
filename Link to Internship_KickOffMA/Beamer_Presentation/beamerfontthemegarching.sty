@@ -1,0 +1,33 @@
+\ProvidesPackage{beamerfontthemegarching}
+
+\RequirePackage{pgfopts}
+
+\usefonttheme[]{metropolis}
+\RequirePackage{sansmathfonts}
+
+\ifboolexpr{bool {xetex} or bool {luatex}}{% only use with xetex or luatex,
+                                % otherwise use default fonts
+%Schriftart Helvetica und passende Math Fonts
+\setsansfont{Helvetica}[Scale=0.95]
+%\setmonofont{Ubuntu Mono}%[Scale=0.86]
+}%
+
+%=== font theme elements ===
+\setbeamerfont{title}{%
+  size=\Large,%
+  series=\normalfont%
+}%
+
+\setbeamerfont{subtitle}{%
+  size=\large,%
+  series=\normalfont%
+}%
+
+\setbeamerfont{frametitle}{%
+  size=\Large,%
+  series=\normalfont%
+}%
+
+%% Local Variables:   %%
+%% TeX-engine: luatex %%
+%% End:               %%

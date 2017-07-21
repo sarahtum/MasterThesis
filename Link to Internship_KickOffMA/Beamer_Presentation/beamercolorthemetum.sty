@@ -1,0 +1,55 @@
+% Copyright 2007 by Till Tantau
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file doc/licenses/LICENSE for more details.
+
+\ProvidesPackage{beamercolorthemetum}
+\RequirePackage{pgf}
+\RequirePackage{tumcolors2}
+
+\usecolortheme{metropolis}
+%=== color theme elements ===
+
+% --- primary palette is used for frame titles and standout slides
+\setbeamercolor{palette primary}{
+  use=normal text,%
+  fg=tumblue,
+  bg=normal text.bg,%
+}%
+
+% \setbeamercolor{frametitle}{%
+%   use=normal text,%
+%   fg=tumblue,%
+% }
+
+\setbeamercolor{titlelike}{%
+  use=palette primary,
+  parent=palette primary
+}
+
+\setbeamercolor{structure}{%
+  use=palette primary,
+  parent=palette primary,
+  fg=tumblue,
+  bg=normal text.bg,
+}
+
+\setbeamercolor{title}{%
+  use=normal text,
+  parent=normal text,
+}
+
+\setbeamercolor{alerted text}{%
+  fg=accentuating orange,%
+  %fg=tumblue,
+}%
+
+
+\mode<presentation>
+
+\mode
+<all>

@@ -1,0 +1,73 @@
+\ProvidesPackage{beamerouterthemegarching}
+
+\useoutertheme[]{metropolis}
+
+\RequirePackage{pgfopts}
+\pgfkeys{%
+  /garching/outer/numbering/.cd,%
+  .is choice,
+  none/.code=\setbeamertemplate{frame numbering}[none],%
+  counter/.code=\setbeamertemplate{frame numbering}[counter],%
+  fraction/.code=\setbeamertemplate{frame numbering}[fraction],%
+}
+
+\logo{}
+
+%=== outer theme elements ===
+\newlength{\garching@logo@height}
+\setlength{\garching@logo@height}{6mm}
+
+\newlength{\garching@frametitle@padding}
+\setlength{\garching@frametitle@padding}{2.2ex}
+
+\newlength{\garching@frametitle@width}
+\setlength{\garching@frametitle@width}{\paperwidth}
+\addtolength{\garching@frametitle@width}{-4\garching@logo@height}
+
+
+\newcommand{\garching@frametitlestrut@start}{
+  \rule{0pt}{2\garching@logo@height +%
+    \garching@frametitle@padding +%
+    \totalheightof{%
+      \ifcsdef{garching@frametitleformat}{\garching@frametitleformat X}{X}%
+    }%
+  }%
+  \rule{\garching@frametitle@padding}{0pt}
+}
+\newcommand{\garching@frametitlestrut@end}{
+  \rule[-\garching@frametitle@padding]{0pt}{\garching@frametitle@padding}
+}
+\defbeamertemplate*{frametitle}{garchingplain}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,%
+      ignorebg,
+      sep=0pt,%
+      left
+%      leftskip=\garching@frametitle@padding,%
+%      rightskip=\garching@frametitle@rightpadding,%
+    ]{frametitle}%
+  \garching@frametitlestrut@start\insertframetitle\garching@frametitlestrut@end%
+  \end{beamercolorbox}%
+}%
+
+% --- logo ---
+\setbeamertemplate{logo}{}%remove old logo
+\defbeamertemplate*{background}{tum}{%
+\tikz[overlay,remember picture]{\node[anchor=north east, inner sep=\garching@logo@height] at (current page.north
+  east) {\tumlogo{height=\garching@logo@height}};}
+}%
+
+% --- add 'empty' option to frame
+\providebool{garching@empty}
+\define@key{beamerframe}{empty}[true]{%
+  \booltrue{garching@empty}
+  \begingroup
+  \setbeamertemplate{background}[default]
+}
+\apptocmd{\beamer@reseteecodes}{%
+  \ifbool{garching@empty}{
+    \endgroup
+    \boolfalse{garching@empty}
+  }{}
+  }{}{}
