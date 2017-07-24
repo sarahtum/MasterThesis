@@ -1,0 +1,444 @@
+\documentclass[12pt, %larger font size
+			  t     %frames are top-aligned
+]{beamer}%
+\mode<presentation>
+
+%\usetheme{Garching}
+\usetheme{Metropolis} % TODO: change back to Garching
+
+\usepackage[utf8]{inputenc}
+\usepackage[english,ngerman]{babel}%
+\usepackage[autostyle=true]{csquotes}%
+\usepackage{graphicx}
+\usepackage[export]{adjustbox} % to align images
+\usepackage{booktabs}
+\usepackage{multimedia} % for /media to embed videos
+
+\makeatletter
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=2ex,left]{author in head/foot}%
+    \usebeamerfont{author in head/foot}%\insertshortauthor
+    \hskip 12.05cm
+    \insertframenumber{}
+  \end{beamercolorbox}}
+}
+\makeatother
+
+
+\title{Dynamical Post-Processing\\ for Manipulation Trajectories}%
+\subtitle{Internship Report}%
+\author{Sarah Braun}%
+\institute[TU München]{Technische Universität München}%
+\titlegraphic{\includegraphics[height=0.3\paperheight]{tum-uhrenturm}}
+\date{July 24th, 2017}%
+
+
+\begin{document}
+\selectlanguage{english}
+
+%------TITLEFRAME-----------------------------------------------------------------------
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+%------MOTIVATION-----------------------------------------------------------------------
+\begin{frame}
+\frametitle{Motivation}
+Classical manipulation planners:
+\begin{itemize}
+\item Sampling-based
+\item Output \textit{kinematic} path consisting of sequence of robot configurations
+\end{itemize}
+
+$\Rightarrow$ Dynamics not yet taken into account\\
+$\Rightarrow$ Local improvements possible
+
+\end{frame}
+
+
+
+%-------POST-PROCESSING STRATEGIES--------------------------------------------------
+\begin{frame}
+  \frametitle{Evaluation of Various Post-Processing Strategies}
+  \begin{enumerate}
+  \item Hauser's shortcutting idea
+  \item Smooth object interaction
+  \item Sampling of new transitions
+  \item Sampling of new grasps and placements
+  \end{enumerate}
+\end{frame}
+
+%-------HAUSER SHORTCUTTING-------------------------------------------------------------
+\begin{frame}
+ \frametitle{1. Hauser's Shortcutting Idea}
+
+ \begin{columns}[T]
+   \begin{column}{.5\textwidth}
+     \begin{itemize}
+       \item \only<1>{Transform path to start-stop-trajectory} \only<2->{\textcolor{gray}{Transform path to start-stop-trajectory}}
+       \item \only<1>{Shortcut iteratively:} \only<2->{\textcolor{gray}{Shortcut iteratively:}}
+       \begin{itemize}
+         \item \only<1>{sample two points} \only<2->{\textcolor{gray}{sample two points}}
+         \item\only<1>{compute shortcut}\only<2->{compute shortcut \hskip -4.5cm \textbf{\textcolor{orange}{How?}}}
+         \item \only<1>{check collisions} \only<2->{\textcolor{gray}{check collisions}}
+       \end{itemize}   
+     \end{itemize}
+   \end{column}
+   
+   \begin{column}{.5\textwidth}
+     \includegraphics[height=0.6\paperheight, right]{../Images/Hauser_Shortcutting.pdf}
+   \end{column}
+ \end{columns}
+\end{frame}
+
+%-------SYNCHRONIZATION OF AXES-------------------------------------------------------------
+\begin{frame}
+\frametitle{Synchronization of Axes}
+\vskip -.3cm
+\begin{columns}[T]
+  \begin{column}{.5\textwidth}
+    \begin{block}{Basic Idea}
+      \begin{itemize}
+        \item find "bottleneck" axis
+	    \item synchronize all axes to bottleneck time
+	  \end{itemize}
+	\end{block}
+  \end{column}
+
+  \only<1>{
+  \begin{column}{.5\textwidth}
+    \invisible{
+    \begin{block}{Reflexxes}
+      \begin{itemize}
+        \item find "bottleneck axis" and inoperative time intervals
+        \item synchronize all axes to earliest possible point in time
+      \end{itemize}
+    \end{block}}
+  \end{column}
+  }
+  
+  \only<2-3>{
+  \begin{column}{.5\textwidth}
+    \includegraphics[scale=0.2]{../RecordsAndPlots/velocityDiagram_14d.png}
+  \end{column}
+  }
+
+  \only<4>{
+  \begin{column}{.5\textwidth}
+    \begin{block}{Reflexxes}
+      \begin{itemize}
+        \item find "bottleneck axis" and inoperative time intervals
+        \item synchronize all axes to earliest possible point in time
+      \end{itemize}
+    \end{block}
+  \end{column}
+  }
+\end{columns}
+
+%\vskip -1cm
+\hskip -.57cm
+\only<3>{
+\textbf{\textcolor{orange}{Problem}}
+\setlength{\leftmargini}{.4cm}
+\begin{itemize}
+  \item  synchronization to arbitrary subsequent point in time not always possible
+  \item each axis has inoperative time intervals in which axis cannot be synchronized
+  \end{itemize}
+}
+
+\end{frame}
+
+%-------SMOOTH INTERACTION---INITIAL STATE--------------------------------------------
+\begin{frame}
+\frametitle{2. Smooth Interaction}
+  \begin{itemize}
+    \item "interaction" = approaching the object to be gripped
+  \end{itemize}
+
+  \centering
+    \fbox{\includegraphics[scale=0.2]{../Images/SmoothInteraction_smaller.jpg}}
+    \begin{itemize}
+      \item current solution: stop between motion and grasp
+      \item stopping takes a lot of time
+    \end{itemize} 
+\end{frame}
+
+
+%-------SMOOTH INTERACTION---BETTER-------------------------------------------------
+\begin{frame}
+\frametitle{2. Smooth Interaction}
+  \begin{itemize}
+    \item "interaction" = approaching the object to be gripped
+  \end{itemize}
+  
+  \centering
+  \fbox{\includegraphics[scale=0.2]{../Images/SmoothInteraction_smaller_orange_2.jpg}}
+  \begin{itemize}
+    \item better: slide smoothly into linear movement
+    \item use Reflexxes for computation of orange motion
+  \end{itemize}
+\end{frame}
+
+%-------TRANSITION SAMPLING---BASIC IDEA-----------------------------------------------
+\begin{frame}
+\frametitle{3. Sampling of New Transitions - Basic Idea}
+\begin{itemize}
+  \item Recall: Manipulation Planner
+  \only<1>{
+  \begin{center}
+    \includegraphics[scale=0.3]{../Images/Transition_1.png}
+  \end{center}
+  }
+  \only<2>{
+  \begin{center}
+    \includegraphics[scale=0.3]{../Images/Transition_2.png}
+  \end{center}
+  }
+  \item Idea: Sample new transitions and re-plan preceeding and succeeding trajectories
+\end{itemize}
+\end{frame}
+
+%-------TRANSITION SAMPLING---MORE DETAILS--I--------------------------------------------
+\begin{frame}
+\frametitle{3. Sampling of New Transitions - More Details}
+New transition is ... 
+  \begin{columns}[T]
+    \begin{column}{.05\textwidth}
+    \end{column}
+    \begin{column}{.45\textwidth}
+       \footnotesize{... either new inverse kinematic}\\
+       \footnotesize{\invisible{... }(for active arms)} \\ \vskip 0.3cm
+       \fbox{\includegraphics[scale=0.10]{../Images/New_Transition.png}}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \footnotesize{... or arbitrary valid configuration \\
+      \invisible{... }(for passive arms)} \\ \vskip 0.285cm                                                                            
+      \hskip -.35cm \fbox{\includegraphics[scale=0.145]{../Images/New_Transition_4.png}}
+    \end{column}
+  \end{columns} 
+\end{frame}
+
+%-------TRANSITION SAMPLING---MORE DETAILS--II--------------------------------------------
+\begin{frame}
+\frametitle{3. Sampling of New Transitions - More Details}
+Re-plan using Reflexxes:
+
+\only<1>{
+\begin{center}
+    \includegraphics[scale=0.3]{../Images/Transition_3.png}
+\end{center}
+}
+\only<2>{
+\begin{center}
+    \includegraphics[scale=0.3]{../Images/Transition_4.png}
+\end{center}
+}
+\only<3>{
+\begin{center}
+    \includegraphics[scale=0.3]{../Images/Transition_5.png}
+\end{center}
+}
+\end{frame}
+
+%-------GRASP SAMPLING--------------------------------------------------------------
+\begin{frame}
+\frametitle{4. Sampling of New Grasps and Placements}
+\begin{itemize}
+  \item Recall: Manipulation Planner
+  \begin{itemize}
+    \item Sample a set of \textit{fixed} grasps
+    \item For these, sample configuration roadmaps
+  \end{itemize}    
+  \item Post-Processing so far: Stick to these grasps
+\only<2>{
+  \item Idea: Also sample new grasps and re-plan
+  \item But: New grasp changes collision checks for all subsequent action
+  % Bild von Philipp mit roadmap of roadmaps, streiche hier eine roadmap durch und ersetze sie durch eine neue, zu neuem Grasp gehörend
+}
+\end{itemize}
+\end{frame}
+
+%-------VIDEO---BEFORE PP-----------------------------------------------------
+\begin{frame}
+\frametitle{Evaluation}
+\vskip -.3cm
+Simple pick-and-place task ... \textcolor{orange}{without} Post-Processing
+\centering
+\movie[height = 6cm, width = 5.4cm, showcontrols, poster]{}{../RecordsAndPlots/Step1.mkv}
+\end{frame}
+
+
+%-------VIDEO---AFTER PP-----------------------------------------------------
+\begin{frame}
+\frametitle{Evaluation}
+\vskip -.3cm
+Simple pick-and-place task ... \textcolor{orange}{after} Post-Processing
+\centering
+\movie[height = 6cm, width = 5.4cm, showcontrols, poster]{}{../RecordsAndPlots/Step4.mkv}
+\end{frame}
+
+
+%-------EVALUATION---BEFORE PP-----------------------------------------------------
+\begin{frame}
+\label{Plot_Step1}
+\frametitle{Evaluation}
+\vskip -.3cm
+Simple pick-and-place task ... \textcolor{orange}{without} Post-Processing
+\only<1>{
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step1.png}
+\end{center}
+}
+\only<2>{
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step1_Arrows1.png}
+\end{center}
+}
+\only<3>{
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step1_Arrows2.png}
+\end{center}
+}
+\only<4>{
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step1_Arrows3.png}
+\end{center}
+}
+\end{frame}
+
+%-------EVALUATION---AFTER HAUSER--------------------------------------------------
+\begin{frame}
+\label{Plot_Step2}
+\frametitle{Evaluation}
+\vskip -.3cm
+\invisible{Simple pick-and-place task} ... \textcolor{orange}{after Hauser's Shortcutting}
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step2.png}
+\end{center}
+\end{frame}
+
+%-------EVALUATION---AFTER HAUSER + SHORTCUTTING----------------------------------
+\begin{frame}
+\label{Plot_Step3}
+\frametitle{Evaluation}
+\vskip -.3cm
+\invisible{Simple pick-and-pl} ... \textcolor{orange}{after Shortcutting + Smooth Interaction}
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step3.png}
+\end{center}
+\end{frame}
+
+%-------EVALUATION---AFTER TRANSITION SAMPLING------------------------------------
+\begin{frame}
+\label{Plot_Step4}
+\frametitle{Evaluation}
+\vskip -.3cm
+\invisible{Simple pick-and-place task} ... \textcolor{orange}{after Transition Sampling}
+\begin{center}
+  \includegraphics[scale=0.185]{../RecordsAndPlots/Step4.png}
+\end{center}
+\end{frame}
+
+
+%-------COMPARISON-----------------------------------------------------
+\begin{frame}
+\frametitle{Comparison of the Post-Processing Steps}
+\centering
+\includegraphics[scale=0.14]{../Images/Comparison.png}
+\end{frame}
+
+%-------THESIS-------------------------------------------------------
+\begin{frame}
+\frametitle{Outlook Master's Thesis}
+\begin{columns}[T]
+\begin{column}{.55\textwidth}
+\small
+\begin{itemize}
+\item Task: Modeling of a dynamic manipulation task as a MINLP
+\item MINLP = \textbf{M}ixed \textbf{I}nteger \textbf{N}onlinear \textbf{P}rogram
+\item Include dynamic constraints into optimization
+\end{itemize}
+\only<2->{
+\textcolor{orange}{$\Rightarrow$ Systematic approach for local, \\ \hskip .5cm time-optimal solutions}\\
+\textcolor{orange}{$\Rightarrow$ Potential new approach for global \\ \hskip .5cm solutions}
+}
+\end{column}
+
+\begin{column}{.45\textwidth}
+\small
+\begin{itemize}
+\item Idea: Informed search in sampling-based manipulation planner
+\end{itemize}
+\only<3->{
+\textcolor{orange}{$\Rightarrow$ More effective sampling strategies}
+}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+%----------------------------------------------------------------------
+%----------BACKUP------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}
+\centering
+\begin{beamercolorbox}[wd=\paperwidth,ht=5cm,dp=1ex,center]{blue}% TODO: tumblue instead of blue
+\usebeamerfont{frametitle} \textcolor{blue}{Backup}% TODO: tumblue instead of blue
+\end{beamercolorbox}
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Synchronization not always possible}
+%\centering
+%\includegraphics[scale=0.5]{../Images/SynchronizationNotPossible.png}
+%\end{frame}
+
+\begin{frame}
+\frametitle{Synchronization not always possible}
+\centering
+\includegraphics[scale=0.5]{../Images/SynchronizationNotPossible_2.png}
+\end{frame}
+
+
+%----------------------------------------------------------------------
+%----------VIDEOS------------------------------------------------------
+
+%----------NO POST-PROCESSING------------------------------------------------------
+\begin{frame}
+\label{Video_Step1}
+\frametitle{No Post-Processing}
+\centering
+\movie[height = 6cm, width = 5.4cm, showcontrols, poster]{}{../RecordsAndPlots/Step1.mkv}
+\hyperlink{Plot_Step1}{\beamerbutton{Plot}}
+\end{frame}
+
+%----------HAUSER SHORTCUTTING------------------------------------------------------
+\begin{frame}
+\label{Video_Step2}
+\frametitle{Hauser's Shortcutting}
+\centering
+\movie[height = 6cm, width = 5.4cm, showcontrols, poster]{}{../RecordsAndPlots/Step2.mkv}
+\hyperlink{Plot_Step2}{\beamerbutton{Plot}}
+\end{frame}
+
+%----------HAUSER + SMOOTH INTERACTION----------------------------------------------
+\begin{frame}
+\label{Video_Step3}
+\frametitle{Shortcutting plus Smooth Interaction}
+\centering
+\movie[height = 6cm, width = 5.4cm, showcontrols, poster]{}{../RecordsAndPlots/Step3.mkv}
+\hyperlink{Plot_Step3}{\beamerbutton{Plot}}
+\end{frame}
+
+%----------TRANSITION SAMPLING-----------------------------------------------------
+\begin{frame}
+\label{Video_Step4}
+\frametitle{Sampling of New Transitions}
+\centering
+\movie[height = 6cm, width = 5.4cm, showcontrols, poster]{}{../RecordsAndPlots/Step4.mkv}
+\hyperlink{Plot_Step4}{\beamerbutton{Plot}}
+\end{frame}
+
+\end{document}
